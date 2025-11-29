@@ -21,11 +21,11 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ onClose, editId 
         role: 'AHD',
         week: '',
         month: new Date().toISOString().slice(0, 7), // Default to current month YYYY-MM
-        numberOfChats: 0,
-        slPercentage: 0,
-        frtSeconds: 0,
-        artSeconds: 0,
-        ahtMinutes: 0,
+        numberOfChats: undefined,
+        slPercentage: undefined,
+        frtSeconds: undefined,
+        artSeconds: undefined,
+        ahtMinutes: undefined,
         imageUrl: ''
     };
 
@@ -220,8 +220,8 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ onClose, editId 
                                     type="number"
                                     min="0"
                                     className="input-field"
-                                    value={formData.numberOfChats}
-                                    onChange={e => setFormData({ ...formData, numberOfChats: Number(e.target.value) })}
+                                    value={formData.numberOfChats ?? ''}
+                                    onChange={e => setFormData({ ...formData, numberOfChats: e.target.value === '' ? undefined : Number(e.target.value) })}
                                 />
                             </div>
                             <div>
@@ -232,8 +232,8 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ onClose, editId 
                                     max="100"
                                     step="0.1"
                                     className="input-field"
-                                    value={formData.slPercentage}
-                                    onChange={e => setFormData({ ...formData, slPercentage: Number(e.target.value) })}
+                                    value={formData.slPercentage ?? ''}
+                                    onChange={e => setFormData({ ...formData, slPercentage: e.target.value === '' ? undefined : Number(e.target.value) })}
                                 />
                             </div>
                             <div>
@@ -243,8 +243,8 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ onClose, editId 
                                     min="0"
                                     step="0.1"
                                     className="input-field"
-                                    value={formData.frtSeconds}
-                                    onChange={e => setFormData({ ...formData, frtSeconds: Number(e.target.value) })}
+                                    value={formData.frtSeconds ?? ''}
+                                    onChange={e => setFormData({ ...formData, frtSeconds: e.target.value === '' ? undefined : Number(e.target.value) })}
                                 />
                             </div>
                             <div>
@@ -254,8 +254,8 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ onClose, editId 
                                     min="0"
                                     step="0.1"
                                     className="input-field"
-                                    value={formData.artSeconds}
-                                    onChange={e => setFormData({ ...formData, artSeconds: Number(e.target.value) })}
+                                    value={formData.artSeconds ?? ''}
+                                    onChange={e => setFormData({ ...formData, artSeconds: e.target.value === '' ? undefined : Number(e.target.value) })}
                                 />
                             </div>
                             <div>
@@ -265,8 +265,8 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ onClose, editId 
                                     min="0"
                                     step="0.1"
                                     className="input-field"
-                                    value={formData.ahtMinutes}
-                                    onChange={e => setFormData({ ...formData, ahtMinutes: Number(e.target.value) })}
+                                    value={formData.ahtMinutes ?? ''}
+                                    onChange={e => setFormData({ ...formData, ahtMinutes: e.target.value === '' ? undefined : Number(e.target.value) })}
                                 />
                             </div>
                         </div>
