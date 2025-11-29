@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+    --color-brand-50: #f5f3ff;
+    --color-brand-100: #ede9fe;
+    --color-brand-200: #ddd6fe;
+    --color-brand-300: #c4b5fd;
+    --color-brand-400: #a78bfa;
+    --color-brand-500: #8b5cf6;
+    --color-brand-600: #7c3aed;
+    --color-brand-700: #6d28d9;
+    --color-brand-800: #5b21b6;
+    --color-brand-900: #4c1d95;
+    --color-brand-950: #2e1065;
+
+    --color-accent-50: #fff1f2;
+    --color-accent-500: #f43f5e;
+    --color-accent-600: #e11d48;
+}
+
+@layer base {
+    body {
+        background-color: var(--color-brand-50);
+        color: #1e293b;
+        /* slate-800 */
+    }
+
+    /* Hide spin buttons for number inputs */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+}
+
+@layer components {
+    .input-field {
+        @apply w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-700 placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-200 focus:outline-none transition-all duration-200 bg-slate-50/50 hover:bg-white;
+    }
+}
