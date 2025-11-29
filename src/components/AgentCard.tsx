@@ -85,21 +85,21 @@ export const AgentCard: React.FC<AgentCardProps> = ({ agent, rank }) => {
                     </div>
 
                     <div className="flex justify-between items-center pt-1">
-                        <span className="text-slate-500 text-xs font-medium">First Response</span>
+                        <span className="text-slate-500 text-xs font-medium">First Response Time</span>
                         <span className={clsx("font-bold font-mono", getStatusColor(agent.frtSeconds, THRESHOLDS.frt))}>
                             {agent.frtSeconds.toFixed(1)}s
                         </span>
                     </div>
 
                     <div className="flex justify-between items-center pt-1">
-                        <span className="text-slate-500 text-xs font-medium">Response Time</span>
+                        <span className="text-slate-500 text-xs font-medium">Avg Response Time</span>
                         <span className={clsx("font-bold font-mono", getStatusColor(agent.artSeconds, THRESHOLDS.art))}>
                             {agent.artSeconds}s
                         </span>
                     </div>
 
                     <div className="flex justify-between items-center pt-1">
-                        <span className="text-slate-500 text-xs font-medium">Handling Time</span>
+                        <span className="text-slate-500 text-xs font-medium">Avg Handling Time</span>
                         <span className={clsx("font-bold font-mono", getStatusColor(agent.ahtMinutes, THRESHOLDS.aht))}>
                             {agent.ahtMinutes}m
                         </span>
