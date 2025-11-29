@@ -40,8 +40,8 @@ export const FiltersBar: React.FC = () => {
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
 
                 {/* Period Controls */}
-                <div className="flex items-center gap-3 w-full md:w-auto">
-                    <div className="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-lg border border-slate-200">
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                    <div className="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-lg border border-slate-200 w-full sm:w-auto">
                         <Calendar className="w-4 h-4 text-slate-500" />
                         <select
                             className="bg-transparent border-none text-sm font-medium focus:ring-0 text-slate-700 cursor-pointer"
@@ -53,7 +53,7 @@ export const FiltersBar: React.FC = () => {
                         </select>
                     </div>
 
-                    <div className="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-lg border border-slate-200 w-full md:w-48">
+                    <div className="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-lg border border-slate-200 w-full sm:w-48 md:w-48">
                         <select
                             className="bg-transparent border-none text-sm font-medium focus:ring-0 text-slate-700 cursor-pointer w-full p-0"
                             value={filters.selectedPeriod}
@@ -70,7 +70,7 @@ export const FiltersBar: React.FC = () => {
 
                 {/* Search and Role Filter */}
                 <div className="flex items-center gap-3 w-full md:w-auto">
-                    <div className="flex items-center gap-2 md:w-64">
+                    <div className="flex items-center gap-2 w-full md:w-64">
                         <input
                             type="text"
                             placeholder="Search agents..."

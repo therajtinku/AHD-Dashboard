@@ -69,27 +69,27 @@ export const LeaderboardTable: React.FC = () => {
                 <table className="w-full text-sm text-left">
                     <thead className="bg-slate-50/50 text-slate-500 font-medium border-b border-slate-200">
                         <tr>
-                            <th className="px-4 sm:px-6 py-4 w-16">Rank</th>
-                            <th className="px-4 sm:px-6 py-4">
+                            <th className="px-3 sm:px-6 py-4 w-12 sm:w-16">Rank</th>
+                            <th className="px-3 sm:px-6 py-4">
                                 <div className="flex items-center gap-1">Agent</div>
                             </th>
-                            <th className="px-4 sm:px-6 py-4">Employee ID</th>
-                            <th className="px-4 sm:px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('numberOfChats'); }}>
+                            <th className="px-3 sm:px-6 py-4">Employee ID</th>
+                            <th className="px-3 sm:px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('numberOfChats'); }}>
                                 <div className="flex items-center justify-center gap-1">Chats</div>
                             </th>
-                            <th className="px-4 sm:px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('slPercentage'); }}>
+                            <th className="px-3 sm:px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('slPercentage'); }}>
                                 <div className="flex items-center justify-center gap-1">SL (%) <SortIcon field="slPercentage" /></div>
                             </th>
-                            <th className="px-4 sm:px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('frtSeconds'); }}>
+                            <th className="px-3 sm:px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('frtSeconds'); }}>
                                 <div className="flex items-center justify-center gap-1">FRT (sec) <SortIcon field="frtSeconds" /></div>
                             </th>
-                            <th className="px-4 sm:px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('artSeconds'); }}>
+                            <th className="px-3 sm:px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('artSeconds'); }}>
                                 <div className="flex items-center justify-center gap-1">ART (sec) <SortIcon field="artSeconds" /></div>
                             </th>
-                            <th className="px-4 sm:px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('ahtMinutes'); }}>
+                            <th className="px-3 sm:px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('ahtMinutes'); }}>
                                 <div className="flex items-center justify-center gap-1">AHT (min) <SortIcon field="ahtMinutes" /></div>
                             </th>
-                            <th className="px-4 sm:px-6 py-4">Status</th>
+                            <th className="px-3 sm:px-6 py-4">Status</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -103,8 +103,8 @@ export const LeaderboardTable: React.FC = () => {
 
                             return (
                                 <tr key={agent.id} className="hover:bg-brand-50/30 transition-colors group">
-                                    <td className="px-4 sm:px-6 py-4 text-slate-400 font-medium group-hover:text-brand-500">{index + 1}</td>
-                                    <td className="px-4 sm:px-6 py-4">
+                                    <td className="px-3 sm:px-6 py-4 text-slate-400 font-medium group-hover:text-brand-500">{index + 1}</td>
+                                    <td className="px-3 sm:px-6 py-4">
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-sm font-bold text-brand-600 overflow-hidden border-2 border-white shadow-sm">
                                                 {agent.imageUrl ? (
@@ -116,25 +116,25 @@ export const LeaderboardTable: React.FC = () => {
                                             <span className="font-bold text-slate-700 group-hover:text-brand-700 transition-colors">{agent.agentName}</span>
                                         </div>
                                     </td>
-                                    <td className="px-4 sm:px-6 py-4">
+                                    <td className="px-3 sm:px-6 py-4">
                                         <span className="font-mono text-slate-500 text-xs">
                                             {agent.agentId}
                                         </span>
                                     </td>
-                                    <td className="px-4 sm:px-6 py-4 text-center font-bold text-slate-900">{agent.numberOfChats}</td>
-                                    <td className={clsx("px-4 sm:px-6 py-4 text-center font-medium", getStatusColor(agent.slPercentage, THRESHOLDS.sl, 'higherIsBetter'))}>
+                                    <td className="px-3 sm:px-6 py-4 text-center font-bold text-slate-900">{agent.numberOfChats}</td>
+                                    <td className={clsx("px-3 sm:px-6 py-4 text-center font-medium", getStatusColor(agent.slPercentage, THRESHOLDS.sl, 'higherIsBetter'))}>
                                         {agent.slPercentage.toFixed(1)}%
                                     </td>
-                                    <td className={clsx("px-4 sm:px-6 py-4 text-center font-medium", getStatusColor(agent.frtSeconds, THRESHOLDS.frt))}>
+                                    <td className={clsx("px-3 sm:px-6 py-4 text-center font-medium", getStatusColor(agent.frtSeconds, THRESHOLDS.frt))}>
                                         {agent.frtSeconds.toFixed(1)}
                                     </td>
-                                    <td className={clsx("px-4 sm:px-6 py-4 text-center font-medium", getStatusColor(agent.artSeconds, THRESHOLDS.art))}>
+                                    <td className={clsx("px-3 sm:px-6 py-4 text-center font-medium", getStatusColor(agent.artSeconds, THRESHOLDS.art))}>
                                         {agent.artSeconds.toFixed(1)}
                                     </td>
-                                    <td className={clsx("px-4 sm:px-6 py-4 text-center font-medium", getStatusColor(agent.ahtMinutes, THRESHOLDS.aht))}>
+                                    <td className={clsx("px-3 sm:px-6 py-4 text-center font-medium", getStatusColor(agent.ahtMinutes, THRESHOLDS.aht))}>
                                         {agent.ahtMinutes.toFixed(1)}
                                     </td>
-                                    <td className="px-4 sm:px-6 py-4">
+                                    <td className="px-3 sm:px-6 py-4">
                                         {issues.length === 0 ? (
                                             <span className="inline-flex items-center gap-1.5 text-green-700 text-xs font-bold bg-green-50 px-3 py-1 rounded-full border border-green-100">
                                                 <CheckCircle2 className="w-3.5 h-3.5" /> All OK
