@@ -3,6 +3,7 @@ import { getStatusColor } from '../utils/scoring';
 import { THRESHOLDS } from '../utils/constants';
 import { Trophy, Medal, MessageSquare, Zap } from 'lucide-react';
 import clsx from 'clsx';
+import { motion } from 'framer-motion';
 
 export const AgentCard = ({ agent, rank }) => {
 
@@ -26,21 +27,29 @@ export const AgentCard = ({ agent, rank }) => {
     };
 
     return (
-        <div className={clsx(
-            "relative rounded-3xl border p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl",
-            rankColors[rank] || 'border-slate-200 bg-white hover:border-brand-200'
-        )}>
+        <motion.div
+            whileHover={{ y: -8, transition: { type: "spring", stiffness: 300 } }}
+            className={clsx(
+                "relative rounded-3xl border p-6 hover:shadow-2xl transition-shadow duration-300",
+                rankColors[rank] || 'border-slate-200 bg-white hover:border-brand-200'
+            )}
+        >
             <div className="absolute -top-6 left-1/2 -translate-x-1/2 flex flex-col items-center z-10">
-                <div className="bg-white p-3 rounded-full shadow-lg border border-slate-100 mb-1">
+                <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+                    className="bg-white p-3 rounded-full shadow-lg border border-slate-100 mb-1"
+                >
                     {rankIcons[rank]}
-                </div>
+                </motion.div>
                 {/* Rank Label Removed as requested */}
             </div>
 
             <div className="mt-16 flex flex-col items-center text-center">
-                <div className="w-24 h-24 rounded-full overflow-hidden bg-slate-100 mb-4 border-4 border-white shadow-lg ring-1 ring-slate-100">
+                <div className="w-24 h-24 rounded-full overflow-hidden bg-slate-100 mb-4 border-4 border-white shadow-lg ring-1 ring-slate-100 relative group">
                     {agent.imageUrl ? (
-                        <img src={agent.imageUrl} alt={agent.agentName} className="w-full h-full object-cover" />
+                        <img src={agent.imageUrl} alt={agent.agentName} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                     ) : (
                         <div className={`w-full h-full flex items-center justify-center text-2xl font-bold text-white bg-gradient-to-br ${rank === 1 ? 'from-yellow-400 to-orange-500' : 'from-brand-400 to-brand-600'}`}>
                             {agent.agentName.split(' ').map(n => n[0]).join('').slice(0, 2)}
@@ -100,6 +109,6 @@ export const AgentCard = ({ agent, rank }) => {
                     </div>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 };

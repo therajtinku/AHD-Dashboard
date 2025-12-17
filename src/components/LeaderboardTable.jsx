@@ -6,6 +6,7 @@ import { getStatusColor, checkThresholds, isEligibleForTopPerformer } from '../u
 import { THRESHOLDS } from '../utils/constants';
 import { ChevronDown, ChevronUp, AlertCircle, CheckCircle2 } from 'lucide-react';
 import clsx from 'clsx';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export const LeaderboardTable = () => {
     const { filters } = useDashboard();
@@ -54,7 +55,13 @@ export const LeaderboardTable = () => {
     };
 
     return (
-        <div id="leaderboard-section" className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+        <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            id="leaderboard-section"
+            className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl border border-slate-100 overflow-hidden"
+        >
             <div className="p-6 border-b border-slate-100 bg-gradient-to-r from-white to-brand-50/30 flex justify-between items-center">
                 <h3 className="font-bold text-lg text-slate-800">Leaderboard</h3>
                 <span className="text-xs font-medium text-slate-400 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
@@ -89,61 +96,70 @@ export const LeaderboardTable = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                        {sortedData.map((agent, index) => {
-                            const { slStatus, frtStatus, artStatus, ahtStatus } = checkThresholds(agent);
-                            const issues = [];
-                            if (slStatus === 'warning') issues.push('SL');
-                            if (frtStatus === 'warning') issues.push('FRT');
-                            if (artStatus === 'warning') issues.push('ART');
-                            if (ahtStatus === 'warning') issues.push('AHT');
+                        <AnimatePresence>
+                            {sortedData.map((agent, index) => {
+                                const { slStatus, frtStatus, artStatus, ahtStatus } = checkThresholds(agent);
+                                const issues = [];
+                                if (slStatus === 'warning') issues.push('SL');
+                                if (frtStatus === 'warning') issues.push('FRT');
+                                if (artStatus === 'warning') issues.push('ART');
+                                if (ahtStatus === 'warning') issues.push('AHT');
 
-                            return (
-                                <tr key={agent.id} className="hover:bg-brand-50/30 transition-colors group">
-                                    <td className="px-3 sm:px-6 py-4 text-slate-400 font-medium group-hover:text-brand-500">{index + 1}</td>
-                                    <td className="px-3 sm:px-6 py-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-sm font-bold text-brand-600 overflow-hidden border-2 border-white shadow-sm">
-                                                {agent.imageUrl ? (
-                                                    <img src={agent.imageUrl} alt="" className="w-full h-full object-cover" />
-                                                ) : (
-                                                    agent.agentName.split(' ').map((n) => n[0]).join('').slice(0, 2)
-                                                )}
+                                return (
+                                    <motion.tr
+                                        key={agent.id}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: 20 }}
+                                        transition={{ duration: 0.3, delay: index * 0.05 }}
+                                        className="hover:bg-brand-50/30 transition-colors group"
+                                    >
+                                        <td className="px-3 sm:px-6 py-4 text-slate-400 font-medium group-hover:text-brand-500">{index + 1}</td>
+                                        <td className="px-3 sm:px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-sm font-bold text-brand-600 overflow-hidden border-2 border-white shadow-sm">
+                                                    {agent.imageUrl ? (
+                                                        <img src={agent.imageUrl} alt="" className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        agent.agentName.split(' ').map((n) => n[0]).join('').slice(0, 2)
+                                                    )}
+                                                </div>
+                                                <span className="font-bold text-slate-700 group-hover:text-brand-700 transition-colors">{agent.agentName}</span>
                                             </div>
-                                            <span className="font-bold text-slate-700 group-hover:text-brand-700 transition-colors">{agent.agentName}</span>
-                                        </div>
-                                    </td>
-                                    <td className="px-3 sm:px-6 py-4">
-                                        <span className="font-mono text-slate-500 text-xs">
-                                            {agent.agentId}
-                                        </span>
-                                    </td>
-                                    <td className="px-3 sm:px-6 py-4 text-center font-bold text-slate-900">{agent.numberOfChats}</td>
-                                    <td className={clsx("px-3 sm:px-6 py-4 text-center font-medium", getStatusColor(agent.slPercentage, THRESHOLDS.sl, 'higherIsBetter'))}>
-                                        {agent.slPercentage.toFixed(1)}%
-                                    </td>
-                                    <td className={clsx("px-3 sm:px-6 py-4 text-center font-medium", getStatusColor(agent.frtSeconds, THRESHOLDS.frt))}>
-                                        {agent.frtSeconds.toFixed(1)}
-                                    </td>
-                                    <td className={clsx("px-3 sm:px-6 py-4 text-center font-medium", getStatusColor(agent.artSeconds, THRESHOLDS.art))}>
-                                        {agent.artSeconds.toFixed(1)}
-                                    </td>
-                                    <td className={clsx("px-3 sm:px-6 py-4 text-center font-medium", getStatusColor(agent.ahtMinutes, THRESHOLDS.aht))}>
-                                        {agent.ahtMinutes.toFixed(1)}
-                                    </td>
-                                    <td className="px-3 sm:px-6 py-4">
-                                        {issues.length === 0 ? (
-                                            <span className="inline-flex items-center gap-1.5 text-green-700 text-xs font-bold bg-green-50 px-3 py-1 rounded-full border border-green-100">
-                                                <CheckCircle2 className="w-3.5 h-3.5" /> All OK
+                                        </td>
+                                        <td className="px-3 sm:px-6 py-4">
+                                            <span className="font-mono text-slate-500 text-xs">
+                                                {agent.agentId}
                                             </span>
-                                        ) : (
-                                            <span className="inline-flex items-center gap-1.5 text-amber-700 text-xs font-bold bg-amber-50 px-3 py-1 rounded-full border border-amber-100">
-                                                <AlertCircle className="w-3.5 h-3.5" /> Check {issues.join(', ')}
-                                            </span>
-                                        )}
-                                    </td>
-                                </tr>
-                            );
-                        })}
+                                        </td>
+                                        <td className="px-3 sm:px-6 py-4 text-center font-bold text-slate-900">{agent.numberOfChats}</td>
+                                        <td className={clsx("px-3 sm:px-6 py-4 text-center font-medium", getStatusColor(agent.slPercentage, THRESHOLDS.sl, 'higherIsBetter'))}>
+                                            {agent.slPercentage.toFixed(1)}%
+                                        </td>
+                                        <td className={clsx("px-3 sm:px-6 py-4 text-center font-medium", getStatusColor(agent.frtSeconds, THRESHOLDS.frt))}>
+                                            {agent.frtSeconds.toFixed(1)}
+                                        </td>
+                                        <td className={clsx("px-3 sm:px-6 py-4 text-center font-medium", getStatusColor(agent.artSeconds, THRESHOLDS.art))}>
+                                            {agent.artSeconds.toFixed(1)}
+                                        </td>
+                                        <td className={clsx("px-3 sm:px-6 py-4 text-center font-medium", getStatusColor(agent.ahtMinutes, THRESHOLDS.aht))}>
+                                            {agent.ahtMinutes.toFixed(1)}
+                                        </td>
+                                        <td className="px-3 sm:px-6 py-4">
+                                            {issues.length === 0 ? (
+                                                <span className="inline-flex items-center gap-1.5 text-green-700 text-xs font-bold bg-green-50 px-3 py-1 rounded-full border border-green-100">
+                                                    <CheckCircle2 className="w-3.5 h-3.5" /> All OK
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1.5 text-amber-700 text-xs font-bold bg-amber-50 px-3 py-1 rounded-full border border-amber-100">
+                                                    <AlertCircle className="w-3.5 h-3.5" /> Check {issues.join(', ')}
+                                                </span>
+                                            )}
+                                        </td>
+                                    </motion.tr>
+                                );
+                            })}
+                        </AnimatePresence>
                         {sortedData.length === 0 && (
                             <tr>
                                 <td colSpan={9} className="px-6 py-12 text-center text-slate-500">
@@ -154,6 +170,6 @@ export const LeaderboardTable = () => {
                     </tbody>
                 </table>
             </div>
-        </div>
+        </motion.div>
     );
 };
