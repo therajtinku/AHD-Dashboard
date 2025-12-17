@@ -1,4 +1,4 @@
-# 🚀 AHD Performance Dashboard
+# AHD Performance Dashboard
 
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
@@ -9,14 +9,13 @@ A modern, interactive dashboard designed to track, visualize, and optimize the p
 
 ---
 
-## 🎯 Project Goal
+## Project Goal
 
 The primary goal of the **AHD Performance Dashboard** is to empower team leads and stakeholders with a transparent, data-driven view of support operations. By consolidating metrics like **Service Level (SL)**, **First Response Time (FRT)**, and **Average Handle Time (AHT)** into a unified interface, this project aims to:
 
 *   **Identify Top Talent**: Automatically highlight high-performing agents with a dynamic podium system.
 *   **Track Trends**: Visualize performance over weeks and months to spot improvement areas.
 *   **Simplify Reporting**: Replace manual spreadsheet crunching with automated aggregation and easy CSV imports.
-*   **Enhance Motivation**: Foster healthy competition through a gamified leaderboard experience.
 
 ---
 
@@ -47,10 +46,6 @@ Watch the full demo of the application in action:
     *   **URL Import**: Connect directly to published Google Sheets.
     *   **CRUD Operations**: Manually add, edit, or delete agent records on the fly.
 *   **💾 Persistent Storage**: Secure, local browser storage ensures data is never lost on refresh.
-*   **🎨 Premium UI/UX**:
-    *   Glassmorphism design aesthetic.
-    *   Responsive layout for mobile and desktop.
-    *   Smooth, physics-based animations.
 
 ---
 
@@ -61,11 +56,10 @@ Watch the full demo of the application in action:
 *   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 *   **Build Tool**: [Vite](https://vitejs.dev/)
 *   **Icons**: [Lucide React](https://lucide.dev/)
-*   **Utilities**: `clsx`, `tailwind-merge`, `date-fns`, `papaparse`
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 Follow these steps to set up the project locally on your machine.
 
@@ -103,7 +97,7 @@ To import data effectively, ensure your CSV file matches the following schema. T
 | Header | Description | Example |
 | :--- | :--- | :--- |
 | `agentId` | Unique Employee ID | `R552145` |
-| `agentName` | Full Name | `John Doe` |
+| `agentName` | Full Name | `Tinku` |
 | `role` | Role (Must be 'AHD') | `AHD` |
 | `week` | Week Identifier (ISO Format) | `2025-W45` |
 | `month` | Month Identifier (YYYY-MM) | `2025-11` |
@@ -115,9 +109,3 @@ To import data effectively, ensure your CSV file matches the following schema. T
 | `imageUrl` | Profile Picture URL (Optional) | `https://example.com/pic.jpg` |
 
 > **Note**: You can also use shorthand headers: `sl`, `frt`, `art`, `aht`.
-
----
-
-## 📜 License
-
-© 2025 Raju Goud. All rights reserved.
