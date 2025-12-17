@@ -1,7 +1,7 @@
 # 🚀 AHD Performance Dashboard
 
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
-![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
 
@@ -20,9 +20,25 @@ The primary goal of the **AHD Performance Dashboard** is to empower team leads a
 
 ---
 
+## 🎥 Project Demo
+
+Watch the full demo of the application in action:
+
+[![Watch the Demo](https://img.shields.io/badge/Watch_Demo_Video-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/posts/rajugoud_customersupport-dashboard-cfbr-activity-7402554850045259776-5LvY?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAADdLS24B0nSrvU5qnuMNfab9WCU_bJN8Gcg)
+
+> **Note**: Click the badge above to view the demo on LinkedIn.
+
+---
+
+## 📸 Dashboard Preview
+
+![Dashboard Preview](public/dashboard-preview.png)
+
+---
+
 ## ✨ Features
 
-*   **📊 Interactive Leaderboard**: deeply sortable table displaying critical KPIs (Chats, SL, FRT, ART, AHT).
+*   **📊 Interactive Leaderboard**: Deeply sortable table displaying critical KPIs (Chats, SL, FRT, ART, AHT).
 *   **🏆 Top Performers Podium**: A visually distinct, animated podium showcasing the top 3 eligible agents.
 *   **📅 Time-Based Filtering**: Seamlessly toggle between weekly breakdowns and monthly aggregated views.
 *   **📈 Smart Aggregation**: Monthly data is automatically calculated using weighted averages for accuracy.
@@ -38,16 +54,10 @@ The primary goal of the **AHD Performance Dashboard** is to empower team leads a
 
 ---
 
-## 📸 Dashboard Preview
-
-![Dashboard Preview](public/dashboard-preview.png)
-
----
-
 ## 🛠️ Tech Stack
 
 *   **Framework**: [React 18](https://reactjs.org/)
-*   **Language**: [TypeScript](https://www.typescriptlang.org/)
+*   **Language**: [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 *   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 *   **Build Tool**: [Vite](https://vitejs.dev/)
 *   **Icons**: [Lucide React](https://lucide.dev/)

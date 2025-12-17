@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { useDashboard } from './useDashboard';
-import type { AgentPerformance } from '../types';
 
 export const useAggregatedData = () => {
     const { data, filters } = useDashboard();
@@ -12,7 +11,7 @@ export const useAggregatedData = () => {
         }
 
         // Monthly Aggregation
-        const grouped = new Map<string, AgentPerformance>();
+        const grouped = new Map();
 
         data.forEach(record => {
             if (record.month !== filters.selectedPeriod) return;
@@ -20,7 +19,7 @@ export const useAggregatedData = () => {
             if (!grouped.has(record.agentId)) {
                 grouped.set(record.agentId, { ...record });
             } else {
-                const existing = grouped.get(record.agentId)!;
+                const existing = grouped.get(record.agentId);
                 const totalChats = existing.numberOfChats + record.numberOfChats;
 
                 // Weighted averages

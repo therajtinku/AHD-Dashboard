@@ -1,37 +1,18 @@
-import React, { createContext, useContext, useState, useEffect, type ReactNode, useCallback } from 'react';
-import type { AgentPerformance, FilterState } from '../types';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { parseCSVFromUrl } from '../utils/csvParser';
 
-interface DashboardContextType {
-    data: AgentPerformance[];
-    filters: FilterState;
-    setFilters: (filters: FilterState) => void;
-    addRecord: (record: AgentPerformance) => void;
-    updateRecord: (record: AgentPerformance) => void;
-    deleteRecord: (id: string) => void;
-    importData: (newData: AgentPerformance[]) => void;
-    resetData: () => void;
-    // Sync related
-    dataSourceUrl: string | null;
-    isSyncing: boolean;
-    lastSyncedAt: Date | null;
-    setSyncUrl: (url: string) => Promise<void>;
-    syncData: () => Promise<void>;
-    disconnectSync: () => void;
-}
-
-const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
+const DashboardContext = createContext(undefined);
 
 const STORAGE_KEY = 'ahd_dashboard_data';
 const SYNC_URL_KEY = 'ahd_dashboard_sync_url';
 
-export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [data, setData] = useState<AgentPerformance[]>(() => {
+export const DashboardProvider = ({ children }) => {
+    const [data, setData] = useState(() => {
         const saved = localStorage.getItem(STORAGE_KEY);
         return saved ? JSON.parse(saved) : [];
     });
 
-    const [filters, setFilters] = useState<FilterState>({
+    const [filters, setFilters] = useState({
         periodType: 'Monthly',
         selectedPeriod: '',
         role: 'All',
@@ -39,11 +20,11 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
     });
 
     // Sync State
-    const [dataSourceUrl, setDataSourceUrlState] = useState<string | null>(() => {
+    const [dataSourceUrl, setDataSourceUrlState] = useState(() => {
         return localStorage.getItem(SYNC_URL_KEY);
     });
     const [isSyncing, setIsSyncing] = useState(false);
-    const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
+    const [lastSyncedAt, setLastSyncedAt] = useState(null);
 
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -60,24 +41,19 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
         }
     }, [data, filters.selectedPeriod]);
 
-    const addRecord = (record: AgentPerformance) => {
+    const addRecord = (record) => {
         setData(prev => [...prev, record]);
     };
 
-    const updateRecord = (record: AgentPerformance) => {
+    const updateRecord = (record) => {
         setData(prev => prev.map(item => item.id === record.id ? record : item));
     };
 
-    const deleteRecord = (id: string) => {
+    const deleteRecord = (id) => {
         setData(prev => prev.filter(item => item.id !== id));
     };
 
-    const importData = (newData: AgentPerformance[]) => {
-        // When manually importing, we might want to disconnect sync if it was active?
-        // Or just append. For now, let's keep it simple and just append/merge.
-        // But if the user specifically asked for "Sync", that's handled by setSyncUrl.
-        // Manual import usually implies ad-hoc addition.
-
+    const importData = (newData) => {
         setData(prev => {
             const newIds = new Set(newData.map(d => `${d.agentId}-${d.week}-${d.month}`));
             const filteredPrev = prev.filter(d => !newIds.has(`${d.agentId}-${d.week}-${d.month}`));
@@ -109,7 +85,7 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
         }
     }, [dataSourceUrl]);
 
-    const setSyncUrl = async (url: string) => {
+    const setSyncUrl = async (url) => {
         setDataSourceUrlState(url);
         localStorage.setItem(SYNC_URL_KEY, url);
         // Trigger immediate sync

@@ -1,8 +1,13 @@
-import type { AgentPerformance } from '../types';
-import { THRESHOLDS } from '../types';
+import { THRESHOLDS } from './constants.js';
+// Note: types folder is deleted, but THRESHOLDS might be needed. 
+// Wait, I am deleting types folder. Accessing THRESHOLDS from types?
+// I need to check where THRESHOLDS is defined. It was in 'types'.
+// If 'types/index.ts' contained values (constants) and not just types, I should NOT have deleted it blindly 
+// or I should move the constants.
+// I haven't deleted types folder yet. I just planned to rename everything.
+// I should check 'src/types/index.ts' first!
 
-
-export const calculateScore = (agent: AgentPerformance): number => {
+export const calculateScore = (agent) => {
     // Base score logic (can be refined)
     // Start with a base derived from chats (normalized roughly)
     // This is a heuristic scoring system as requested.
@@ -46,7 +51,7 @@ export const calculateScore = (agent: AgentPerformance): number => {
     return Math.min(100, Math.round(score));
 };
 
-export const isEligibleForTopPerformer = (agent: AgentPerformance): boolean => {
+export const isEligibleForTopPerformer = (agent) => {
     return (
         agent.slPercentage >= THRESHOLDS.sl &&
         agent.frtSeconds <= THRESHOLDS.frt &&
@@ -55,7 +60,7 @@ export const isEligibleForTopPerformer = (agent: AgentPerformance): boolean => {
     );
 };
 
-export const getStatusColor = (value: number, threshold: number, type: 'lowerIsBetter' | 'higherIsBetter' = 'lowerIsBetter'): 'text-green-600' | 'text-amber-500' | 'text-red-600' => {
+export const getStatusColor = (value, threshold, type = 'lowerIsBetter') => {
     if (type === 'lowerIsBetter') {
         if (value <= threshold) return 'text-green-600';
         if (value <= threshold * 1.2) return 'text-amber-500'; // Within 20% over
@@ -67,13 +72,13 @@ export const getStatusColor = (value: number, threshold: number, type: 'lowerIsB
     }
 };
 
-export const getMetricStatus = (value: number, threshold: number): 'ok' | 'warning' => {
+export const getMetricStatus = (value, threshold) => {
     // Inclusive inequality for SL/ART (<= 30 means 30 is OK, 30.1 is warning)
     // AHT is <= 6 (6 is OK, 6.1 is warning)
     return value <= threshold ? 'ok' : 'warning';
 };
 
-export const checkThresholds = (agent: AgentPerformance) => {
+export const checkThresholds = (agent) => {
     // SL is percentage, higher is better
     const slStatus = agent.slPercentage >= THRESHOLDS.sl ? 'ok' : 'warning';
     // FRT is seconds, lower is better

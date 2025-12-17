@@ -3,16 +3,16 @@ import { useDashboard } from '../hooks/useDashboard';
 import { useClickSound } from '../hooks/useClickSound';
 import { Search, Calendar } from 'lucide-react';
 
-export const FiltersBar: React.FC = () => {
+export const FiltersBar = () => {
     const { filters, setFilters, data } = useDashboard();
     const { playClickSound } = useClickSound();
 
     // Extract available weeks and months
-    const weeks = Array.from(new Set(data.map(d => d.week).filter(Boolean))).sort().reverse() as string[];
+    const weeks = Array.from(new Set(data.map(d => d.week).filter(Boolean))).sort().reverse();
     const months = Array.from(new Set(data.map(d => d.month))).sort().reverse();
 
-    const handlePeriodTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const newType = e.target.value as 'Weekly' | 'Monthly';
+    const handlePeriodTypeChange = (e) => {
+        const newType = e.target.value;
         // Reset selected period when type changes to avoid mismatch
         const newSelected = newType === 'Weekly' ? (weeks[0] || '') : (months[0] || '');
         setFilters({ ...filters, periodType: newType, selectedPeriod: newSelected });
@@ -29,7 +29,7 @@ export const FiltersBar: React.FC = () => {
         }
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             handleSearch();
         }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BarChart3, Activity, Sparkles } from 'lucide-react';
 
-export const Header: React.FC = () => {
+export const Header = () => {
     return (
         <header className="bg-gradient-to-r from-[#7c3aed] via-[#3b82f6] to-[#22d3ee] text-white shadow-xl border-b border-brand-500/30">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">

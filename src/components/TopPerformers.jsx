@@ -5,7 +5,7 @@ import { AgentCard } from './AgentCard';
 import { isEligibleForTopPerformer } from '../utils/scoring';
 import { Trophy } from 'lucide-react';
 
-export const TopPerformers: React.FC = () => {
+export const TopPerformers = () => {
     const { filters } = useDashboard();
     const data = useAggregatedData();
 

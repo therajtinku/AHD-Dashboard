@@ -2,20 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Upload, User, Save } from 'lucide-react';
 import { useDashboard } from '../hooks/useDashboard';
 import { useClickSound } from '../hooks/useClickSound';
-import type { AgentPerformance } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
-interface AgentFormModalProps {
-    onClose: () => void;
-    editId?: string;
-}
-
-export const AgentFormModal: React.FC<AgentFormModalProps> = ({ onClose, editId }) => {
+export const AgentFormModal = ({ onClose, editId }) => {
     const { data, addRecord, updateRecord } = useDashboard();
     const { playClickSound } = useClickSound();
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    const fileInputRef = useRef(null);
 
-    const initialFormState: Partial<AgentPerformance> = {
+    const initialFormState = {
         agentId: '',
         agentName: '',
         role: 'AHD',
@@ -29,7 +23,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ onClose, editId 
         imageUrl: ''
     };
 
-    const [formData, setFormData] = useState<Partial<AgentPerformance>>(initialFormState);
+    const [formData, setFormData] = useState(initialFormState);
 
     useEffect(() => {
         if (editId) {
@@ -40,7 +34,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ onClose, editId 
         }
     }, [editId, data]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
 
         // Basic validation
@@ -49,13 +43,13 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ onClose, editId 
             return;
         }
 
-        const record: AgentPerformance = {
+        const record = {
             id: editId || uuidv4(),
-            agentId: formData.agentId!,
-            agentName: formData.agentName!,
+            agentId: formData.agentId,
+            agentName: formData.agentName,
             role: 'AHD',
             week: formData.week,
-            month: formData.month!,
+            month: formData.month,
             numberOfChats: Number(formData.numberOfChats) || 0,
             slPercentage: Number(formData.slPercentage) || 0,
             frtSeconds: Number(formData.frtSeconds) || 0,
@@ -72,7 +66,7 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ onClose, editId 
         onClose();
     };
 
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = (e) => {
         const file = e.target.files?.[0];
         if (file) {
             const url = URL.createObjectURL(file);
@@ -169,16 +163,8 @@ export const AgentFormModal: React.FC<AgentFormModalProps> = ({ onClose, editId 
                                     type="date"
                                     required
                                     className="input-field"
-                                    value={formData.month ? `${formData.month}-01` : ''} // This might need adjustment based on how we store 'month' (YYYY-MM) vs full date
+                                    value={formData.month ? `${formData.month}-01` : ''}
                                     onChange={e => {
-                                        // We still store YYYY-MM for aggregation, but user picks a date
-                                        // Actually, user wants "MM-DD-YY" format display, which input type="date" handles based on locale usually,
-                                        // but standard value is YYYY-MM-DD.
-                                        // If we want to store just the month, we extract it.
-                                        // BUT, if the user wants to pick a specific date, maybe we should store full date?
-                                        // The prompt says "Month format should be 'MM-DD-YY'". And "When I click on Week field the calender should be display to select the week."
-                                        // Let's stick to storing YYYY-MM for 'month' field for now to avoid breaking aggregation logic,
-                                        // but use the date picker to set it.
                                         const date = e.target.value; // YYYY-MM-DD
                                         if (date) {
                                             setFormData({ ...formData, month: date.slice(0, 7) });

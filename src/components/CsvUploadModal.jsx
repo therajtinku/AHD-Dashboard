@@ -4,21 +4,17 @@ import { useDashboard } from '../hooks/useDashboard';
 import { useClickSound } from '../hooks/useClickSound';
 import { parseCSV, parseCSVFromUrl } from '../utils/csvParser';
 
-interface CsvUploadModalProps {
-    onClose: () => void;
-}
-
-export const CsvUploadModal: React.FC<CsvUploadModalProps> = ({ onClose }) => {
+export const CsvUploadModal = ({ onClose }) => {
     const { importData, setSyncUrl } = useDashboard();
     const { playClickSound } = useClickSound();
-    const [activeTab, setActiveTab] = useState<'file' | 'url'>('file');
+    const [activeTab, setActiveTab] = useState('file');
     const [url, setUrl] = useState('');
     const [keepSync, setKeepSync] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    const fileInputRef = useRef(null);
 
-    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileUpload = async (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
@@ -28,14 +24,14 @@ export const CsvUploadModal: React.FC<CsvUploadModalProps> = ({ onClose }) => {
             const data = await parseCSV(file);
             importData(data);
             onClose();
-        } catch (err: any) {
+        } catch (err) {
             setError(err.message || 'Failed to parse CSV');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleUrlImport = async (e: React.FormEvent) => {
+    const handleUrlImport = async (e) => {
         e.preventDefault();
         if (!url) return;
 
@@ -49,7 +45,7 @@ export const CsvUploadModal: React.FC<CsvUploadModalProps> = ({ onClose }) => {
                 importData(data);
             }
             onClose();
-        } catch (err: any) {
+        } catch (err) {
             setError(err.message || 'Failed to fetch or parse CSV from URL');
         } finally {
             setLoading(false);

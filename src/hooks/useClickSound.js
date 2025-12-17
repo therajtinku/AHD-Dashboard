@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import clickSound from '../assets/click.mp3';
 
 export const useClickSound = () => {
-    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const audioRef = useRef(null);
 
     useEffect(() => {
         audioRef.current = new Audio(clickSound);

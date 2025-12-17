@@ -1,15 +1,14 @@
 import Papa from 'papaparse';
-import type { AgentPerformance, Role } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
-export const parseCSV = (file: File): Promise<AgentPerformance[]> => {
+export const parseCSV = (file) => {
     return new Promise((resolve, reject) => {
         Papa.parse(file, {
             header: true,
             skipEmptyLines: true,
             complete: (results) => {
                 try {
-                    const parsedData: AgentPerformance[] = results.data.map((row: any) => {
+                    const parsedData = results.data.map((row) => {
                         // Basic validation could go here
                         if (!row.agentId || !row.agentName) {
                             throw new Error("Missing required fields");
@@ -19,7 +18,7 @@ export const parseCSV = (file: File): Promise<AgentPerformance[]> => {
                             id: uuidv4(), // Generate a local ID for React keys
                             agentId: row.agentId,
                             agentName: row.agentName,
-                            role: (row.role as Role) || 'Tier 1',
+                            role: row.role || 'Tier 1',
                             week: row.week,
                             month: row.month,
                             numberOfChats: parseInt(row.numberOfChats, 10) || 0,
@@ -42,7 +41,7 @@ export const parseCSV = (file: File): Promise<AgentPerformance[]> => {
     });
 };
 
-export const parseCSVFromUrl = async (url: string): Promise<AgentPerformance[]> => {
+export const parseCSVFromUrl = async (url) => {
     // Handle Google Sheets URLs
     let fetchUrl = url;
     if (url.includes('docs.google.com/spreadsheets')) {
@@ -69,16 +68,16 @@ export const parseCSVFromUrl = async (url: string): Promise<AgentPerformance[]> 
                         console.warn('CSV Parsing errors:', results.errors);
                     }
 
-                    const parsedData: AgentPerformance[] = results.data
-                        .filter((row: any) => {
+                    const parsedData = results.data
+                        .filter((row) => {
                             // Basic validation: must have agentId or agentName to be valid
                             return row.agentId && row.agentName;
                         })
-                        .map((row: any) => ({
+                        .map((row) => ({
                             id: uuidv4(),
                             agentId: row.agentId,
                             agentName: row.agentName,
-                            role: (row.role as Role) || 'Tier 1',
+                            role: row.role || 'Tier 1',
                             week: row.week,
                             month: row.month,
                             numberOfChats: parseInt(row.numberOfChats, 10) || 0,
@@ -98,7 +97,7 @@ export const parseCSVFromUrl = async (url: string): Promise<AgentPerformance[]> 
                     reject(e);
                 }
             },
-            error: (e: any) => reject(e)
+            error: (e) => reject(e)
         });
     });
 };

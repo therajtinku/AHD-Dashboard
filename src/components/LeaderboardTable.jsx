@@ -3,20 +3,16 @@ import { useDashboard } from '../hooks/useDashboard';
 import { useAggregatedData } from '../hooks/useAggregatedData';
 import { useClickSound } from '../hooks/useClickSound';
 import { getStatusColor, checkThresholds, isEligibleForTopPerformer } from '../utils/scoring';
-import { THRESHOLDS } from '../types';
+import { THRESHOLDS } from '../utils/constants';
 import { ChevronDown, ChevronUp, AlertCircle, CheckCircle2 } from 'lucide-react';
 import clsx from 'clsx';
 
-
-type SortField = 'numberOfChats' | 'slPercentage' | 'frtSeconds' | 'artSeconds' | 'ahtMinutes' | 'agentName';
-type SortDirection = 'asc' | 'desc';
-
-export const LeaderboardTable: React.FC = () => {
+export const LeaderboardTable = () => {
     const { filters } = useDashboard();
     const aggregatedData = useAggregatedData();
     const { playClickSound } = useClickSound();
-    const [sortField, setSortField] = useState<SortField>('numberOfChats');
-    const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+    const [sortField, setSortField] = useState('numberOfChats');
+    const [sortDirection, setSortDirection] = useState('desc');
 
     const filteredData = aggregatedData.filter(d => {
         const matchesPeriod = filters.periodType === 'Weekly'
@@ -27,7 +23,7 @@ export const LeaderboardTable: React.FC = () => {
         return matchesPeriod && matchesRole && matchesSearch;
     });
 
-    const handleSort = (field: SortField) => {
+    const handleSort = (field) => {
         if (sortField === field) {
             setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
         } else {
@@ -52,7 +48,7 @@ export const LeaderboardTable: React.FC = () => {
         return 0;
     });
 
-    const SortIcon = ({ field }: { field: SortField }) => {
+    const SortIcon = ({ field }) => {
         if (sortField !== field) return <div className="w-4 h-4" />;
         return sortDirection === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />;
     };
@@ -110,7 +106,7 @@ export const LeaderboardTable: React.FC = () => {
                                                 {agent.imageUrl ? (
                                                     <img src={agent.imageUrl} alt="" className="w-full h-full object-cover" />
                                                 ) : (
-                                                    agent.agentName.split(' ').map((n: string) => n[0]).join('').slice(0, 2)
+                                                    agent.agentName.split(' ').map((n) => n[0]).join('').slice(0, 2)
                                                 )}
                                             </div>
                                             <span className="font-bold text-slate-700 group-hover:text-brand-700 transition-colors">{agent.agentName}</span>

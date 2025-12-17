@@ -6,7 +6,7 @@ import { useClickSound } from '../hooks/useClickSound';
 import { CsvUploadModal } from './CsvUploadModal';
 import { AgentFormModal } from './AgentFormModal';
 
-export const DataControls: React.FC = () => {
+export const DataControls = () => {
     const { resetData, data, dataSourceUrl, isSyncing, lastSyncedAt, syncData, disconnectSync } = useDashboard();
     const { playClickSound } = useClickSound();
     const [isUploadOpen, setIsUploadOpen] = useState(false);

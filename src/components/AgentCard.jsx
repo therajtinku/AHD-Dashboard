@@ -1,16 +1,10 @@
 import React from 'react';
-import type { AgentPerformance } from '../types';
 import { getStatusColor } from '../utils/scoring';
-import { THRESHOLDS } from '../types';
+import { THRESHOLDS } from '../utils/constants';
 import { Trophy, Medal, MessageSquare, Zap } from 'lucide-react';
 import clsx from 'clsx';
 
-interface AgentCardProps {
-    agent: AgentPerformance;
-    rank: number;
-}
-
-export const AgentCard: React.FC<AgentCardProps> = ({ agent, rank }) => {
+export const AgentCard = ({ agent, rank }) => {
 
     // Simplified rank styling - uniform professional look
     const rankColors = {
@@ -34,11 +28,11 @@ export const AgentCard: React.FC<AgentCardProps> = ({ agent, rank }) => {
     return (
         <div className={clsx(
             "relative rounded-3xl border p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl",
-            rankColors[rank as keyof typeof rankColors] || 'border-slate-200 bg-white hover:border-brand-200'
+            rankColors[rank] || 'border-slate-200 bg-white hover:border-brand-200'
         )}>
             <div className="absolute -top-6 left-1/2 -translate-x-1/2 flex flex-col items-center z-10">
                 <div className="bg-white p-3 rounded-full shadow-lg border border-slate-100 mb-1">
-                    {rankIcons[rank as keyof typeof rankIcons]}
+                    {rankIcons[rank]}
                 </div>
                 {/* Rank Label Removed as requested */}
             </div>
@@ -80,7 +74,7 @@ export const AgentCard: React.FC<AgentCardProps> = ({ agent, rank }) => {
                             "font-bold text-lg",
                             rank === 1 ? "text-yellow-700" : "text-slate-700"
                         )}>
-                            {rankLabels[rank as keyof typeof rankLabels] || `${rank}th Place`}
+                            {rankLabels[rank] || `${rank}th Place`}
                         </span>
                     </div>
 

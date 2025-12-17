@@ -1,11 +1,7 @@
-import React, { type ReactNode } from 'react';
+import React from 'react';
 import { Header } from './Header';
 
-interface LayoutProps {
-    children: ReactNode;
-}
-
-export const Layout: React.FC<LayoutProps> = ({ children }) => {
+export const Layout = ({ children }) => {
     return (
         <div className="min-h-screen bg-brand-50/50 font-sans pb-12">
             <Header />
