@@ -4,10 +4,10 @@ import { useAggregatedData } from '../hooks/useAggregatedData';
 import { useClickSound } from '../hooks/useClickSound';
 import { getStatusColor, checkThresholds, isEligibleForTopPerformer } from '../utils/scoring';
 import { THRESHOLDS } from '../utils/constants';
-import { ChevronDown, ChevronUp, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, AlertCircle, CheckCircle2, Search } from 'lucide-react';
 import clsx from 'clsx';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Toast } from './Toast';
+import { AgentDetailModal } from './AgentDetailModal';
 
 export const LeaderboardTable = () => {
     const { filters } = useDashboard();
@@ -15,9 +15,7 @@ export const LeaderboardTable = () => {
     const { playClickSound } = useClickSound();
     const [sortField, setSortField] = useState('numberOfChats');
     const [sortDirection, setSortDirection] = useState('desc');
-
-    // Toast State
-    const [toast, setToast] = useState(null); // { message, type }
+    const [selectedAgent, setSelectedAgent] = useState(null);
 
     const filteredData = aggregatedData.filter(d => {
         const matchesPeriod = filters.periodType === 'Weekly'
@@ -34,42 +32,6 @@ export const LeaderboardTable = () => {
         } else {
             setSortField(field);
             setSortDirection('desc');
-        }
-    };
-
-    const handleStatusClick = (agent) => {
-        playClickSound();
-        const { slStatus, frtStatus, artStatus, ahtStatus } = checkThresholds(agent);
-        const issues = [];
-        const targets = [];
-
-        if (slStatus === 'warning') {
-            issues.push(`SL`);
-            targets.push(`SL ${agent.slPercentage.toFixed(1)}% (Target: ${THRESHOLDS.sl}%)`);
-        }
-        if (frtStatus === 'warning') {
-            issues.push(`FRT`);
-            targets.push(`FRT ${agent.frtSeconds.toFixed(1)}s (Target: <${THRESHOLDS.frt}s)`);
-        }
-        if (artStatus === 'warning') {
-            issues.push(`ART`);
-            targets.push(`ART ${agent.artSeconds.toFixed(1)}s (Target: <${THRESHOLDS.art}s)`);
-        }
-        if (ahtStatus === 'warning') {
-            issues.push(`AHT`);
-            targets.push(`AHT ${agent.ahtMinutes.toFixed(1)}m (Target: <${THRESHOLDS.aht}m)`);
-        }
-
-        if (issues.length > 0) {
-            setToast({
-                type: 'warning',
-                message: `${agent.agentName} needs to improve: ${targets.join(', ')}.`
-            });
-        } else {
-            setToast({
-                type: 'success',
-                message: `${agent.agentName} is meeting all performance targets! Keep it up.`
-            });
         }
     };
 
@@ -93,16 +55,10 @@ export const LeaderboardTable = () => {
 
     return (
         <>
-            <AnimatePresence>
-                {toast && (
-                    <Toast
-                        key="toast"
-                        message={toast.message}
-                        type={toast.type}
-                        onClose={() => setToast(null)}
-                    />
-                )}
-            </AnimatePresence>
+            <AgentDetailModal
+                agent={selectedAgent}
+                onClose={() => setSelectedAgent(null)}
+            />
 
             <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -125,25 +81,25 @@ export const LeaderboardTable = () => {
                     <table className="w-full text-sm text-left">
                         <thead className="bg-slate-50/30 text-slate-400 font-semibold border-b border-slate-100/60">
                             <tr>
-                                <th className="px-6 py-4 w-16 text-center">#</th>
-                                <th className="px-6 py-4">Agent</th>
-                                <th className="px-6 py-4">ID</th>
-                                <th className="px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('numberOfChats'); }}>
+                                <th className="px-4 md:px-6 py-4 w-16 text-center">#</th>
+                                <th className="px-4 md:px-6 py-4">Agent</th>
+                                <th className="px-4 md:px-6 py-4">ID</th>
+                                <th className="px-4 md:px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('numberOfChats'); }}>
                                     <div className="flex items-center justify-center gap-1">CHATS <SortIcon field="numberOfChats" /></div>
                                 </th>
-                                <th className="px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('slPercentage'); }}>
+                                <th className="px-4 md:px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('slPercentage'); }}>
                                     <div className="flex items-center justify-center gap-1">SL% <SortIcon field="slPercentage" /></div>
                                 </th>
-                                <th className="px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('frtSeconds'); }}>
+                                <th className="px-4 md:px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('frtSeconds'); }}>
                                     <div className="flex items-center justify-center gap-1">FRT <SortIcon field="frtSeconds" /></div>
                                 </th>
-                                <th className="px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('artSeconds'); }}>
+                                <th className="px-4 md:px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('artSeconds'); }}>
                                     <div className="flex items-center justify-center gap-1">ART <SortIcon field="artSeconds" /></div>
                                 </th>
-                                <th className="px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('ahtMinutes'); }}>
+                                <th className="px-4 md:px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('ahtMinutes'); }}>
                                     <div className="flex items-center justify-center gap-1">AHT <SortIcon field="ahtMinutes" /></div>
                                 </th>
-                                <th className="px-6 py-4">Status</th>
+                                <th className="px-4 md:px-6 py-4">Status</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100/40">
@@ -162,11 +118,12 @@ export const LeaderboardTable = () => {
                                             initial={{ opacity: 0, x: -10 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             exit={{ opacity: 0, x: 10 }}
-                                            transition={{ duration: 0.2, delay: index * 0.03 }}
-                                            className="hover:bg-brand-50/40 transition-colors group"
+                                            transition={{ duration: 0.4, ease: "easeInOut", delay: index * 0.04 }}
+                                            onClick={() => { playClickSound(); setSelectedAgent(agent); }}
+                                            className="hover:bg-brand-50/40 transition-colors group cursor-pointer"
                                         >
-                                            <td className="px-6 py-4 text-center text-slate-300 font-medium group-hover:text-brand-400">{index + 1}</td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 md:px-6 py-4 text-center text-slate-300 font-medium group-hover:text-brand-400">{index + 1}</td>
+                                            <td className="px-4 md:px-6 py-4">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center text-xs font-bold text-slate-500 overflow-hidden border border-slate-100 shadow-sm">
                                                         {agent.imageUrl ? (
@@ -178,29 +135,27 @@ export const LeaderboardTable = () => {
                                                     <span className="font-semibold text-slate-700 group-hover:text-brand-700 transition-colors">{agent.agentName}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 md:px-6 py-4">
                                                 <span className="font-mono text-slate-400 text-[10px] tracking-wide">
                                                     {agent.agentId}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-center font-bold text-slate-800">{agent.numberOfChats}</td>
-                                            <td className={clsx("px-6 py-4 text-center font-medium", getStatusColor(agent.slPercentage, THRESHOLDS.sl, 'higherIsBetter'))}>
+                                            <td className="px-4 md:px-6 py-4 text-center font-bold text-slate-800">{agent.numberOfChats}</td>
+                                            <td className={clsx("px-4 md:px-6 py-4 text-center font-medium", getStatusColor(agent.slPercentage, THRESHOLDS.sl, 'higherIsBetter'))}>
                                                 {agent.slPercentage.toFixed(1)}%
                                             </td>
-                                            <td className={clsx("px-6 py-4 text-center font-medium", getStatusColor(agent.frtSeconds, THRESHOLDS.frt))}>
+                                            <td className={clsx("px-4 md:px-6 py-4 text-center font-medium", getStatusColor(agent.frtSeconds, THRESHOLDS.frt))}>
                                                 {agent.frtSeconds.toFixed(1)}
                                             </td>
-                                            <td className={clsx("px-6 py-4 text-center font-medium", getStatusColor(agent.artSeconds, THRESHOLDS.art))}>
+                                            <td className={clsx("px-4 md:px-6 py-4 text-center font-medium", getStatusColor(agent.artSeconds, THRESHOLDS.art))}>
                                                 {agent.artSeconds.toFixed(1)}
                                             </td>
-                                            <td className={clsx("px-6 py-4 text-center font-medium", getStatusColor(agent.ahtMinutes, THRESHOLDS.aht))}>
+                                            <td className={clsx("px-4 md:px-6 py-4 text-center font-medium", getStatusColor(agent.ahtMinutes, THRESHOLDS.aht))}>
                                                 {agent.ahtMinutes.toFixed(1)}
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 md:px-6 py-4">
                                                 <button
-                                                    onClick={() => handleStatusClick(agent)}
-                                                    className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 rounded-full transition-transform active:scale-95"
-                                                    title="Click for details"
+                                                    className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 rounded-full"
                                                 >
                                                     {issues.length === 0 ? (
                                                         <div className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100 hover:bg-emerald-100 transition-colors">
@@ -208,7 +163,7 @@ export const LeaderboardTable = () => {
                                                             <span className="text-[10px] font-bold uppercase tracking-wider">Good</span>
                                                         </div>
                                                     ) : (
-                                                        <div className="flex items-center gap-1.5 text-amber-600 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-100 hover:bg-amber-100 transition-colors animate-pulse hover:animate-none">
+                                                        <div className="flex items-center gap-1.5 text-amber-600 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-100 hover:bg-amber-100 transition-colors">
                                                             <AlertCircle className="w-4 h-4" />
                                                             <span className="text-[10px] font-bold uppercase tracking-wider">Review</span>
                                                         </div>
