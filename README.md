@@ -19,7 +19,7 @@ The primary goal of the **AHD Performance Dashboard** is to empower team leads a
 
 ---
 
-## 🎥 Project Demo
+## Project Demo
 
 Watch the full demo of the application in action:
 
@@ -29,7 +29,7 @@ Watch the full demo of the application in action:
 
 ---
 
-## 📸 Dashboard Preview
+## Dashboard Preview
 
 ![Dashboard Preview](public/dashboard.png)
 
@@ -49,7 +49,7 @@ Watch the full demo of the application in action:
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 *   **Framework**: [React 18](https://reactjs.org/)
 *   **Language**: [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
@@ -90,7 +90,7 @@ Follow these steps to set up the project locally on your machine.
 
 ---
 
-## 📄 CSV Data Format
+## CSV Data Format
 
 To import data effectively, ensure your CSV file matches the following schema. The order of columns does not matter.
 
