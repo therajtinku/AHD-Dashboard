@@ -31,7 +31,7 @@ Watch the full demo of the application in action:
 
 ## 📸 Dashboard Preview
 
-![Dashboard Preview](public/dashboard-preview.png)
+![Dashboard Preview](public/dashboard.png)
 
 ---
 
