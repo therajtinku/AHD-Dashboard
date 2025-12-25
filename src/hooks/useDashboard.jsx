@@ -3,14 +3,18 @@ import { parseCSVFromUrl } from '../utils/csvParser';
 
 const DashboardContext = createContext(undefined);
 
-const STORAGE_KEY = 'ahd_dashboard_data';
-const SYNC_URL_KEY = 'ahd_dashboard_sync_url';
+// Removed STORAGE_KEY, SYNC_URL_KEY as we now use DB
+const SYNC_URL_KEY = 'ahd_dashboard_sync_url'; // Keep sync url in local storage for convenience, or move to DB? 
+// Let's keep sync URL in local storage for now as a user preference, 
+// but the DATA itself is in the DB.
+
+const API_BASE = import.meta.env.VITE_API_BASE || '/api'; // Use relative path for production (same domain), or env var for local dev if split
+
 
 export const DashboardProvider = ({ children }) => {
-    const [data, setData] = useState(() => {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        return saved ? JSON.parse(saved) : [];
-    });
+    const [data, setData] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     const [filters, setFilters] = useState({
         periodType: 'Monthly',
@@ -26,9 +30,26 @@ export const DashboardProvider = ({ children }) => {
     const [isSyncing, setIsSyncing] = useState(false);
     const [lastSyncedAt, setLastSyncedAt] = useState(null);
 
+    // Initial Data Fetch
     useEffect(() => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    }, [data]);
+        fetchRecords();
+    }, []);
+
+    const fetchRecords = async () => {
+        setIsLoading(true);
+        try {
+            const response = await fetch(`${API_BASE}/records`);
+            if (!response.ok) throw new Error('Failed to fetch records');
+            const result = await response.json();
+            setData(result);
+            setError(null);
+        } catch (err) {
+            console.error(err);
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     // Initialize filters based on data if empty
     useEffect(() => {
@@ -41,30 +62,79 @@ export const DashboardProvider = ({ children }) => {
         }
     }, [data, filters.selectedPeriod]);
 
-    const addRecord = (record) => {
-        setData(prev => [...prev, record]);
+    const addRecord = async (record) => {
+        try {
+            const res = await fetch(`${API_BASE}/records`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(record)
+            });
+            if (!res.ok) throw new Error('Failed to add record');
+            const newRecord = await res.json();
+            setData(prev => [...prev, newRecord]);
+        } catch (err) {
+            console.error(err);
+            // Optionally set error state
+        }
     };
 
-    const updateRecord = (record) => {
-        setData(prev => prev.map(item => item.id === record.id ? record : item));
+    const updateRecord = async (record) => {
+        try {
+            const res = await fetch(`${API_BASE}/records/${record.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(record)
+            });
+            if (!res.ok) throw new Error('Failed to update record');
+            const updated = await res.json();
+            setData(prev => prev.map(item => item.id === record.id ? updated : item));
+        } catch (err) {
+            console.error(err);
+        }
     };
 
-    const deleteRecord = (id) => {
-        setData(prev => prev.filter(item => item.id !== id));
+    const deleteRecord = async (id) => {
+        try {
+            const res = await fetch(`${API_BASE}/records/${id}`, {
+                method: 'DELETE',
+            });
+            if (!res.ok) throw new Error('Failed to delete record');
+            setData(prev => prev.filter(item => item.id !== id));
+        } catch (err) {
+            console.error(err);
+        }
     };
 
-    const importData = (newData) => {
-        setData(prev => {
-            const newIds = new Set(newData.map(d => `${d.agentId}-${d.week}-${d.month}`));
-            const filteredPrev = prev.filter(d => !newIds.has(`${d.agentId}-${d.week}-${d.month}`));
-            return [...filteredPrev, ...newData];
-        });
+    // Client-side processed import, then sync to server
+    const importData = async (newData) => {
+        // We will send this bulk data to the server to sync
+        setIsSyncing(true);
+        try {
+            const res = await fetch(`${API_BASE}/sync`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newData)
+            });
+            if (!res.ok) throw new Error('Failed to sync data');
+            const allRecords = await res.json();
+            setData(allRecords);
+        } catch (err) {
+            console.error("Import failed", err);
+        } finally {
+            setIsSyncing(false);
+        }
     };
 
-    const resetData = () => {
-        setData([]);
-        disconnectSync(); // Also clear sync when resetting
-        localStorage.removeItem(STORAGE_KEY);
+    const resetData = async () => {
+        if (confirm('Are you sure you want to delete all data from the database? This cannot be undone.')) {
+            try {
+                await fetch(`${API_BASE}/records`, { method: 'DELETE' });
+                setData([]);
+                disconnectSync();
+            } catch (err) {
+                console.error(err);
+            }
+        }
     };
 
     // Sync Logic
@@ -74,12 +144,30 @@ export const DashboardProvider = ({ children }) => {
         setIsSyncing(true);
         try {
             const newData = await parseCSVFromUrl(dataSourceUrl);
-            // In sync mode, we REPLACE the data to reflect deletions
-            setData(newData);
+
+            // Send to backend
+            const res = await fetch(`${API_BASE}/sync`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newData)
+            });
+            if (!res.ok) {
+                let errorMessage = 'Sync failed';
+                try {
+                    const errorData = await res.json();
+                    errorMessage = errorData.error || errorData.message || errorMessage;
+                } catch (e) {
+                    errorMessage = `Sync failed: ${res.status} ${res.statusText}`;
+                }
+                throw new Error(errorMessage);
+            }
+            const allRecords = await res.json();
+            setData(allRecords);
+
             setLastSyncedAt(new Date());
         } catch (error) {
             console.error("Sync failed:", error);
-            // Optionally handle error state here
+            setError("Sync failed: " + error.message);
         } finally {
             setIsSyncing(false);
         }
@@ -89,15 +177,30 @@ export const DashboardProvider = ({ children }) => {
         setDataSourceUrlState(url);
         localStorage.setItem(SYNC_URL_KEY, url);
         // Trigger immediate sync
-        // We need to use the url directly here because state update might not be immediate
         setIsSyncing(true);
         try {
             const newData = await parseCSVFromUrl(url);
-            setData(newData);
+            const res = await fetch(`${API_BASE}/sync`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newData)
+            });
+            if (!res.ok) {
+                let errorMessage = 'Initial sync failed';
+                try {
+                    const errorData = await res.json();
+                    errorMessage = errorData.error || errorData.message || errorMessage;
+                } catch (e) {
+                    errorMessage = `Initial sync failed: ${res.status} ${res.statusText}`;
+                }
+                throw new Error(errorMessage);
+            }
+            const allRecords = await res.json();
+            setData(allRecords);
             setLastSyncedAt(new Date());
         } catch (error) {
             console.error("Initial sync failed:", error);
-            throw error; // Re-throw to let UI know
+            throw error; // Propagate the specific error message
         } finally {
             setIsSyncing(false);
         }
@@ -126,7 +229,8 @@ export const DashboardProvider = ({ children }) => {
     return (
         <DashboardContext.Provider value={{
             data, filters, setFilters, addRecord, updateRecord, deleteRecord, importData, resetData,
-            dataSourceUrl, isSyncing, lastSyncedAt, setSyncUrl, syncData, disconnectSync
+            dataSourceUrl, isSyncing, lastSyncedAt, setSyncUrl, syncData, disconnectSync,
+            isLoading, error
         }}>
             {children}
         </DashboardContext.Provider>

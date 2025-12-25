@@ -1,6 +1,14 @@
 import Papa from 'papaparse';
 import { v4 as uuidv4 } from 'uuid';
 
+// Helper function to parse percentage values
+const parsePercentage = (value) => {
+    if (!value) return 0;
+    // Remove % sign if present and parse as float
+    const cleaned = String(value).replace('%', '').trim();
+    return parseFloat(cleaned) || 0;
+};
+
 export const parseCSV = (file) => {
     return new Promise((resolve, reject) => {
         Papa.parse(file, {
@@ -15,14 +23,17 @@ export const parseCSV = (file) => {
                         }
 
                         return {
-                            id: uuidv4(), // Generate a local ID for React keys
+                            // Generate stable ID from agentId + period (week or month)
+                            // This ensures the same agent's data for the same period always has the same ID
+                            // Prevents duplicates during sync by allowing proper upsert matching
+                            id: `${row.agentId}-${row.week || row.month}`,
                             agentId: row.agentId,
                             agentName: row.agentName,
                             role: row.role || 'Tier 1',
                             week: row.week,
                             month: row.month,
                             numberOfChats: parseInt(row.numberOfChats, 10) || 0,
-                            slPercentage: parseFloat(row.slPercentage || row.sl) || 0,
+                            slPercentage: parsePercentage(row.slPercentage || row.sl),
                             frtSeconds: parseFloat(row.frtSeconds || row.frt) || 0,
                             artSeconds: parseFloat(row.artSeconds) || 0,
                             ahtMinutes: parseFloat(row.ahtMinutes || row.ahtSeconds) || 0,
@@ -43,10 +54,26 @@ export const parseCSV = (file) => {
 
 export const parseCSVFromUrl = async (url) => {
     // Handle Google Sheets URLs
-    let fetchUrl = url;
-    if (url.includes('docs.google.com/spreadsheets')) {
-        // Convert /edit... to /export?format=csv
-        fetchUrl = url.replace(/\/edit.*$/, '/export?format=csv');
+    let fetchUrl = url.trim();
+    if (fetchUrl.includes('docs.google.com/spreadsheets')) {
+        // Extract spreadsheet ID and gid (sheet ID)
+        const spreadsheetIdMatch = fetchUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+        const gidMatch = fetchUrl.match(/[#&?]gid=([0-9]+)/);
+
+        if (!spreadsheetIdMatch) {
+            throw new Error('Invalid Google Sheets URL');
+        }
+
+        const spreadsheetId = spreadsheetIdMatch[1];
+        const gid = gidMatch ? gidMatch[1] : '0';
+
+        // Use CORS proxy to bypass CORS restrictions
+        // Alternative: Use Google Sheets API with proper authentication
+        const exportUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=${gid}`;
+
+        // Use a CORS proxy for client-side fetching
+        // Popular options: cors-anywhere, allorigins, corsproxy
+        fetchUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(exportUrl)}`;
     }
 
     const response = await fetch(fetchUrl);
@@ -74,14 +101,16 @@ export const parseCSVFromUrl = async (url) => {
                             return row.agentId && row.agentName;
                         })
                         .map((row) => ({
-                            id: uuidv4(),
+                            // Generate stable ID from agentId + period (week or month)
+                            // This ensures the same agent's data for the same period always has the same ID
+                            id: `${row.agentId}-${row.week || row.month}`,
                             agentId: row.agentId,
                             agentName: row.agentName,
                             role: row.role || 'Tier 1',
                             week: row.week,
                             month: row.month,
                             numberOfChats: parseInt(row.numberOfChats, 10) || 0,
-                            slPercentage: parseFloat(row.slPercentage || row.sl) || 0,
+                            slPercentage: parsePercentage(row.slPercentage || row.sl),
                             frtSeconds: parseFloat(row.frtSeconds || row.frt) || 0,
                             artSeconds: parseFloat(row.artSeconds) || 0,
                             ahtMinutes: parseFloat(row.ahtMinutes || row.ahtSeconds) || 0,
@@ -101,3 +130,4 @@ export const parseCSVFromUrl = async (url) => {
         });
     });
 };
+
