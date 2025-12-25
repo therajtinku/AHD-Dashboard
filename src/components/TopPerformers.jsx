@@ -1,132 +1,105 @@
 import React from 'react';
-import { useDashboard } from '../hooks/useDashboard';
-import { useAggregatedData } from '../hooks/useAggregatedData';
-import { AgentCard } from './AgentCard';
-import { isEligibleForTopPerformer } from '../utils/scoring';
-import { Trophy } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Trophy, Medal, Crown } from 'lucide-react';
 
-export const TopPerformers = () => {
-    const { filters } = useDashboard();
-    const data = useAggregatedData();
+export const TopPerformers = ({ agents }) => {
+    if (!agents || agents.length < 3) return null;
 
-    // Filter data based on selection (Role only, as period is handled by hook)
-    const filteredData = data.filter(d => {
-        const matchesRole = filters.role === 'All' || d.role === filters.role;
-        return matchesRole;
-    });
+    const top3 = agents.slice(0, 3);
+    const [first, second, third] = [top3[0], top3[1], top3[2]];
 
-    // Sort for top performers:
-    // 1. Must be eligible (meet all thresholds)
-    // 2. Sort by chats (desc)
-    // 3. Tiebreaker: AHT (asc)
-
-    const sortedAgents = [...filteredData].sort((a, b) => {
-        const aEligible = isEligibleForTopPerformer(a);
-        const bEligible = isEligibleForTopPerformer(b);
-
-        // Let's prioritize eligible agents for the podium if there are any.
-        if (aEligible && !bEligible) return -1;
-        if (!aEligible && bEligible) return 1;
-
-        // Then by chats
-        if (b.numberOfChats !== a.numberOfChats) {
-            return b.numberOfChats - a.numberOfChats;
-        }
-        // Then by AHT (lower is better)
-        return a.ahtMinutes - b.ahtMinutes;
-    });
-
-    const top3 = sortedAgents.slice(0, 3);
-
-    if (top3.length === 0) {
-        return (
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-center py-12 bg-white/80 backdrop-blur-sm rounded-xl border border-slate-200 border-dashed"
-            >
-                <p className="text-slate-500">No data available for the selected period.</p>
-            </motion.div>
-        );
-    }
-
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.3, // Increased stagger for better visibility
-                delayChildren: 0.1
-            }
-        }
-    };
-
-    const itemVariants = {
-        hidden: { opacity: 0, y: 100, scale: 0.8 }, // More dramatic start
-        visible: {
+    const podiumVariant = {
+        hidden: { opacity: 0, y: 50 },
+        visible: (custom) => ({
             opacity: 1,
             y: 0,
-            scale: 1,
             transition: {
+                delay: custom * 0.2,
                 type: "spring",
-                stiffness: 80, // Softer spring
-                damping: 10
+                stiffness: 100,
+                damping: 12
             }
-        }
+        })
     };
 
-    return (
-        <div className="mb-16">
-            <div className="text-center mb-12 relative z-20">
-                <motion.h2
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="text-3xl font-bold text-brand-900 mb-2 flex items-center justify-center gap-3"
-                >
-                    <Trophy className="w-8 h-8 text-brand-500" />
-                    Top Performers
-                </motion.h2>
-                <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.2 }}
-                    className="text-slate-500"
-                >
-                    Celebrating excellence in support delivery
-                </motion.p>
+    const PodiumSpot = ({ agent, rank, delay }) => (
+        <motion.div
+            custom={delay}
+            variants={podiumVariant}
+            initial="hidden"
+            animate="visible"
+            className={`flex flex-col items-center justify-end ${rank === 1 ? '-mt-12 z-10' : ''}`}
+        >
+            <div className="relative group cursor-pointer flex flex-col items-center">
+
+                {/* Crown for #1 - Centered Alignment */}
+                {/* Crown Removed */}
+
+                {/* Avatar Ring */}
+                <div className={`rounded-full p-1.5 transition-all duration-300 ${rank === 1 ? 'bg-gradient-to-b from-yellow-300 to-amber-500 shadow-xl shadow-amber-500/30' :
+                    rank === 2 ? 'bg-gradient-to-b from-slate-300 to-slate-400 shadow-lg' :
+                        'bg-gradient-to-b from-orange-300 to-orange-400 shadow-lg'}`}>
+                    <div className={`rounded-full overflow-hidden bg-white border-2 border-white ${rank === 1 ? 'w-24 h-24 md:w-32 md:h-32' : 'w-20 h-20 md:w-24 md:h-24'}`}>
+                        {agent.imageUrl ? (
+                            <img src={agent.imageUrl} alt={agent.agentName} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                        ) : (
+                            <div className={`w-full h-full flex items-center justify-center font-bold text-slate-300 ${rank === 1 ? 'text-4xl' : 'text-2xl'}`}>
+                                {agent.agentName.substring(0, 2)}
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Rank Badge */}
+                <div className={`absolute -bottom-3 left-1/2 -translate-x-1/2 flex items-center justify-center w-8 h-8 rounded-full border-2 border-white lg:w-10 lg:h-10 text-white font-bold shadow-md z-20
+                    ${rank === 1 ? 'bg-amber-500' : rank === 2 ? 'bg-slate-400' : 'bg-orange-400'}`}>
+                    {rank}
+                </div>
             </div>
 
-            {/* Podium Layout: 2nd, 1st, 3rd */}
-            <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                whileInView="visible" // Triggers when scrolled into view
-                viewport={{ once: true, amount: 0.3 }} // Waits until 30% visible
-                className="flex flex-col md:flex-row justify-center items-end gap-8 md:gap-12 px-4 mt-16"
-            >
-                {/* 2nd Place */}
-                {top3[1] && (
-                    <motion.div variants={itemVariants} className="w-full md:w-1/3 max-w-sm order-2 md:order-1">
-                        <AgentCard agent={top3[1]} rank={2} />
-                    </motion.div>
-                )}
+            {/* Content Card with Enhanced Stats */}
+            <div className={`mt-8 text-center bg-white/80 backdrop-blur-md border border-slate-100 rounded-2xl p-3 shadow-sm w-40 md:w-56 group-hover:shadow-md transition-all duration-300 hover:-translate-y-1`}>
+                <h3 className="font-bold text-slate-900 truncate px-2 text-md md:text-lg">{agent.agentName}</h3>
 
-                {/* 1st Place */}
-                {top3[0] && (
-                    <motion.div variants={itemVariants} className="w-full md:w-1/3 max-w-sm order-1 md:order-2 md:-mt-16 z-10 transform md:scale-110 mb-12 md:mb-0">
-                        <AgentCard agent={top3[0]} rank={1} />
-                    </motion.div>
-                )}
+                <div className="flex items-center justify-center gap-1.5 mb-3">
+                    {rank === 1 ? <Trophy className="w-3.5 h-3.5 text-amber-500" /> : <Medal className={`w-3.5 h-3.5 ${rank === 2 ? 'text-slate-400' : 'text-orange-400'}`} />}
+                    <span className="font-bold font-mono text-slate-700 text-lg">{agent.slPercentage.toFixed(1)}%</span>
+                </div>
 
-                {/* 3rd Place */}
-                {top3[2] && (
-                    <motion.div variants={itemVariants} className="w-full md:w-1/3 max-w-sm order-3 md:order-3">
-                        <AgentCard agent={top3[2]} rank={3} />
-                    </motion.div>
-                )}
-            </motion.div>
+                {/* Detailed Stats Grid */}
+                <div className="grid grid-cols-2 gap-2 text-xs border-t border-slate-100 pt-2">
+                    <div className="bg-slate-50 rounded p-1">
+                        <span className="block text-slate-400 font-medium text-[10px] uppercase">Chats</span>
+                        <span className="font-bold text-slate-700">{agent.numberOfChats}</span>
+                    </div>
+                    <div className="bg-slate-50 rounded p-1">
+                        <span className="block text-slate-400 font-medium text-[10px] uppercase">FRT</span>
+                        <span className="font-bold text-slate-700">{agent.frtSeconds}s</span>
+                    </div>
+                    <div className="bg-slate-50 rounded p-1">
+                        <span className="block text-slate-400 font-medium text-[10px] uppercase">ART</span>
+                        <span className="font-bold text-slate-700">{agent.artSeconds}s</span>
+                    </div>
+                    <div className="bg-slate-50 rounded p-1">
+                        <span className="block text-slate-400 font-medium text-[10px] uppercase">AHT</span>
+                        <span className="font-bold text-slate-700">{agent.ahtMinutes}m</span>
+                    </div>
+                </div>
+            </div>
+        </motion.div>
+    );
+
+    return (
+        <div className="relative w-full max-w-5xl mx-auto mb-20 px-4 mt-16">
+            {/* Background Glow */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-48 bg-indigo-500/5 blur-3xl rounded-full pointer-events-none" />
+
+            <div className="relative flex flex-wrap justify-center items-end gap-x-4 gap-y-12 md:gap-x-12 pb-8">
+                {/* Order: 2, 1, 3 for visual pyramid */}
+                <div className="order-2 md:order-1"><PodiumSpot agent={second} rank={2} delay={0.2} /></div>
+                <div className="order-1 md:order-2"><PodiumSpot agent={first} rank={1} delay={0.4} /></div>
+                <div className="order-3 md:order-3"><PodiumSpot agent={third} rank={3} delay={0.6} /></div>
+            </div>
         </div>
     );
 };

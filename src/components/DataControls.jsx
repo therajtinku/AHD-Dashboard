@@ -15,20 +15,20 @@ export const DataControls = () => {
     return (
         <div className="flex flex-wrap gap-3 mb-6 justify-end items-center">
             {dataSourceUrl && (
-                <div className="flex items-center gap-3 mr-auto bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100">
+                <div className="flex items-center gap-3 mr-auto bg-white px-3 py-1.5 rounded-lg border border-indigo-100 shadow-sm">
                     <div className="flex flex-col">
-                        <div className="flex items-center gap-1.5 text-sm font-medium text-blue-700">
-                            <CheckCircle2 className="w-4 h-4" />
+                        <div className="flex items-center gap-1.5 text-sm font-medium text-indigo-700">
+                            <CheckCircle2 className="w-4 h-4 text-indigo-600" />
                             Synced with Google Sheet
                         </div>
                         {lastSyncedAt && (
-                            <span className="text-xs text-blue-500 pl-5">
+                            <span className="text-xs text-slate-500 pl-5">
                                 Last updated: {lastSyncedAt.toLocaleTimeString()}
                             </span>
                         )}
                     </div>
 
-                    <div className="h-8 w-px bg-blue-200 mx-1" />
+                    <div className="h-8 w-px bg-slate-100 mx-1" />
 
                     <button
                         onClick={() => {
@@ -36,7 +36,7 @@ export const DataControls = () => {
                             syncData();
                         }}
                         disabled={isSyncing}
-                        className="p-1.5 text-blue-600 hover:bg-blue-100 rounded-md transition-colors cursor-pointer disabled:opacity-50"
+                        className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors cursor-pointer disabled:opacity-50"
                         title="Refresh Data"
                     >
                         <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
@@ -49,7 +49,7 @@ export const DataControls = () => {
                                 disconnectSync();
                             }
                         }}
-                        className="p-1.5 text-blue-600 hover:bg-blue-100 rounded-md transition-colors cursor-pointer"
+                        className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
                         title="Disconnect Sync"
                     >
                         <Link2Off className="w-4 h-4" />
@@ -62,7 +62,7 @@ export const DataControls = () => {
                     playClickSound();
                     setIsAddOpen(true);
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors cursor-pointer"
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all shadow-sm cursor-pointer"
             >
                 <Plus className="w-4 h-4" />
                 Add Record
@@ -73,7 +73,7 @@ export const DataControls = () => {
                     playClickSound();
                     setIsUploadOpen(true);
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors shadow-sm cursor-pointer"
+                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 transition-all shadow-sm hover:shadow-indigo-500/25 cursor-pointer"
             >
                 <Upload className="w-4 h-4" />
                 Import CSV

@@ -7,7 +7,8 @@ import { THRESHOLDS } from '../utils/constants';
 import { ChevronDown, ChevronUp, AlertCircle, CheckCircle2, Search } from 'lucide-react';
 import clsx from 'clsx';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AgentDetailModal } from './AgentDetailModal';
+import { TopPerformers } from './TopPerformers';
+import { ToastNotification } from './ToastNotification';
 
 export const LeaderboardTable = () => {
     const { filters } = useDashboard();
@@ -15,7 +16,9 @@ export const LeaderboardTable = () => {
     const { playClickSound } = useClickSound();
     const [sortField, setSortField] = useState('numberOfChats');
     const [sortDirection, setSortDirection] = useState('desc');
-    const [selectedAgent, setSelectedAgent] = useState(null);
+
+    // Toast State
+    const [toast, setToast] = useState({ isVisible: false, message: '', type: 'info' });
 
     const filteredData = aggregatedData.filter(d => {
         const matchesPeriod = filters.periodType === 'Weekly'
@@ -53,136 +56,188 @@ export const LeaderboardTable = () => {
         return sortDirection === 'asc' ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />;
     };
 
+    const handleRowClick = (agent) => {
+        playClickSound();
+        const { slStatus, frtStatus, artStatus, ahtStatus } = checkThresholds(agent);
+        const issues = [];
+
+        if (slStatus === 'warning') issues.push('SL% is below target');
+        if (frtStatus === 'warning') issues.push('First Response Time is too high');
+        if (artStatus === 'warning') issues.push('Avg Response Time is too high');
+        if (ahtStatus === 'warning') issues.push('Handling Time needs improvement');
+
+        if (issues.length > 0) {
+            setToast({
+                isVisible: true,
+                type: 'warning',
+                message: issues.join(', ') + '.'
+            });
+        } else {
+            setToast({
+                isVisible: true,
+                type: 'success',
+                message: 'All metrics are on track! Great job keeping up the performance.'
+            });
+        }
+    };
+
     return (
         <>
-            <AgentDetailModal
-                agent={selectedAgent}
-                onClose={() => setSelectedAgent(null)}
+            <ToastNotification
+                isVisible={toast.isVisible}
+                message={toast.message}
+                type={toast.type}
+                onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
             />
 
-            <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-                id="leaderboard-section"
-                className="glass-panel rounded-3xl overflow-hidden mb-12"
-            >
-                <div className="px-8 py-6 border-b border-slate-100/50 flex justify-between items-center bg-white/50">
-                    <div>
-                        <h3 className="font-bold text-xl text-slate-800 tracking-tight">Leaderboard</h3>
-                        <p className="text-xs text-slate-400 font-medium mt-1">Real-time performance metrics</p>
-                    </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-white/80 px-3 py-1.5 rounded-full border border-slate-200/60 shadow-sm">
+            {/* Top Performers Podium */}
+            <TopPerformers agents={sortedData} />
+
+            <div className="flex justify-between items-center mb-6 px-2">
+                <div>
+                    <h3 className="font-bold text-xl text-slate-900 tracking-tight">Leaderboard</h3>
+                    <p className="text-xs text-slate-500 font-medium mt-1">Real-time performance metrics</p>
+                </div>
+                <div className="flex items-center gap-3">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-3 py-1.5 bg-white rounded-full border border-slate-200 shadow-sm">
                         {sortedData.length} Agents
                     </span>
                 </div>
+            </div>
 
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left">
-                        <thead className="bg-slate-50/30 text-slate-400 font-semibold border-b border-slate-100/60">
-                            <tr>
-                                <th className="px-4 md:px-6 py-4 w-16 text-center">#</th>
-                                <th className="px-4 md:px-6 py-4">Agent</th>
-                                <th className="px-4 md:px-6 py-4">ID</th>
-                                <th className="px-4 md:px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('numberOfChats'); }}>
-                                    <div className="flex items-center justify-center gap-1">CHATS <SortIcon field="numberOfChats" /></div>
-                                </th>
-                                <th className="px-4 md:px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('slPercentage'); }}>
-                                    <div className="flex items-center justify-center gap-1">SL% <SortIcon field="slPercentage" /></div>
-                                </th>
-                                <th className="px-4 md:px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('frtSeconds'); }}>
-                                    <div className="flex items-center justify-center gap-1">FRT <SortIcon field="frtSeconds" /></div>
-                                </th>
-                                <th className="px-4 md:px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('artSeconds'); }}>
-                                    <div className="flex items-center justify-center gap-1">ART <SortIcon field="artSeconds" /></div>
-                                </th>
-                                <th className="px-4 md:px-6 py-4 text-center cursor-pointer hover:text-brand-600 transition-colors" onClick={() => { playClickSound(); handleSort('ahtMinutes'); }}>
-                                    <div className="flex items-center justify-center gap-1">AHT <SortIcon field="ahtMinutes" /></div>
-                                </th>
-                                <th className="px-4 md:px-6 py-4">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100/40">
-                            <AnimatePresence>
-                                {sortedData.map((agent, index) => {
-                                    const { slStatus, frtStatus, artStatus, ahtStatus } = checkThresholds(agent);
-                                    const issues = [];
-                                    if (slStatus === 'warning') issues.push('SL');
-                                    if (frtStatus === 'warning') issues.push('FRT');
-                                    if (artStatus === 'warning') issues.push('ART');
-                                    if (ahtStatus === 'warning') issues.push('AHT');
-
-                                    return (
-                                        <motion.tr
-                                            key={agent.id}
-                                            initial={{ opacity: 0, x: -10 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            exit={{ opacity: 0, x: 10 }}
-                                            transition={{ duration: 0.4, ease: "easeInOut", delay: index * 0.04 }}
-                                            onClick={() => { playClickSound(); setSelectedAgent(agent); }}
-                                            className="hover:bg-brand-50/40 transition-colors group cursor-pointer"
-                                        >
-                                            <td className="px-4 md:px-6 py-4 text-center text-slate-300 font-medium group-hover:text-brand-400">{index + 1}</td>
-                                            <td className="px-4 md:px-6 py-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center text-xs font-bold text-slate-500 overflow-hidden border border-slate-100 shadow-sm">
-                                                        {agent.imageUrl ? (
-                                                            <img src={agent.imageUrl} alt="" className="w-full h-full object-cover" />
-                                                        ) : (
-                                                            agent.agentName.split(' ').map((n) => n[0]).join('').slice(0, 2)
-                                                        )}
-                                                    </div>
-                                                    <span className="font-semibold text-slate-700 group-hover:text-brand-700 transition-colors">{agent.agentName}</span>
-                                                </div>
-                                            </td>
-                                            <td className="px-4 md:px-6 py-4">
-                                                <span className="font-mono text-slate-400 text-[10px] tracking-wide">
-                                                    {agent.agentId}
-                                                </span>
-                                            </td>
-                                            <td className="px-4 md:px-6 py-4 text-center font-bold text-slate-800">{agent.numberOfChats}</td>
-                                            <td className={clsx("px-4 md:px-6 py-4 text-center font-medium", getStatusColor(agent.slPercentage, THRESHOLDS.sl, 'higherIsBetter'))}>
-                                                {agent.slPercentage.toFixed(1)}%
-                                            </td>
-                                            <td className={clsx("px-4 md:px-6 py-4 text-center font-medium", getStatusColor(agent.frtSeconds, THRESHOLDS.frt))}>
-                                                {agent.frtSeconds.toFixed(1)}
-                                            </td>
-                                            <td className={clsx("px-4 md:px-6 py-4 text-center font-medium", getStatusColor(agent.artSeconds, THRESHOLDS.art))}>
-                                                {agent.artSeconds.toFixed(1)}
-                                            </td>
-                                            <td className={clsx("px-4 md:px-6 py-4 text-center font-medium", getStatusColor(agent.ahtMinutes, THRESHOLDS.aht))}>
-                                                {agent.ahtMinutes.toFixed(1)}
-                                            </td>
-                                            <td className="px-4 md:px-6 py-4">
-                                                <button
-                                                    className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 rounded-full"
-                                                >
-                                                    {issues.length === 0 ? (
-                                                        <div className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100 hover:bg-emerald-100 transition-colors">
-                                                            <CheckCircle2 className="w-4 h-4" />
-                                                            <span className="text-[10px] font-bold uppercase tracking-wider">Good</span>
-                                                        </div>
-                                                    ) : (
-                                                        <div className="flex items-center gap-1.5 text-amber-600 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-100 hover:bg-amber-100 transition-colors">
-                                                            <AlertCircle className="w-4 h-4" />
-                                                            <span className="text-[10px] font-bold uppercase tracking-wider">Review</span>
-                                                        </div>
-                                                    )}
-                                                </button>
-                                            </td>
-                                        </motion.tr>
-                                    );
-                                })}
-                            </AnimatePresence>
-                        </tbody>
-                    </table>
+            {/* Modern List Header */}
+            <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 bg-slate-100/50 rounded-xl mb-3 text-xs font-bold text-slate-500 uppercase tracking-wider border border-slate-200/50">
+                <div className="col-span-1 text-center">#</div>
+                <div className="col-span-3">Agent</div>
+                <div className="col-span-1 text-center cursor-pointer hover:text-indigo-600 transition-colors flex items-center justify-center gap-1" onClick={() => handleSort('numberOfChats')}>
+                    CHATS
+                    {/* Arrow Removed as requested */}
                 </div>
-                {sortedData.length === 0 && (
-                    <div className="px-6 py-12 text-center text-slate-400 bg-white/50">
-                        No agents found matching the current filters.
-                    </div>
-                )}
-            </motion.div>
+                <div className="col-span-1 text-center cursor-pointer hover:text-indigo-600 transition-colors flex items-center justify-center gap-1" onClick={() => handleSort('slPercentage')}>
+                    SL% <SortIcon field="slPercentage" />
+                </div>
+                <div className="col-span-1 text-center cursor-pointer hover:text-indigo-600 transition-colors flex items-center justify-center gap-1" onClick={() => handleSort('frtSeconds')}>
+                    FRT <SortIcon field="frtSeconds" />
+                </div>
+                <div className="col-span-1 text-center cursor-pointer hover:text-indigo-600 transition-colors flex items-center justify-center gap-1" onClick={() => handleSort('artSeconds')}>
+                    ART <SortIcon field="artSeconds" />
+                </div>
+                <div className="col-span-1 text-center cursor-pointer hover:text-indigo-600 transition-colors flex items-center justify-center gap-1" onClick={() => handleSort('ahtMinutes')}>
+                    AHT <SortIcon field="ahtMinutes" />
+                </div>
+                <div className="col-span-2 text-center">Status</div>
+            </div>
+
+            {/* Modern List Content */}
+            <div className="space-y-3">
+                <AnimatePresence mode='popLayout'>
+                    {sortedData.map((agent, index) => {
+                        const { slStatus, frtStatus, artStatus, ahtStatus } = checkThresholds(agent);
+                        const issues = [];
+                        if (slStatus === 'warning') issues.push('SL');
+                        if (frtStatus === 'warning') issues.push('FRT');
+                        if (artStatus === 'warning') issues.push('ART');
+                        if (ahtStatus === 'warning') issues.push('AHT');
+
+                        return (
+                            <motion.div
+                                layout
+                                key={agent.id}
+                                initial={{ opacity: 0, y: 20, scale: 0.98 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                transition={{ type: "spring", stiffness: 500, damping: 30, delay: index * 0.05 }}
+                                onClick={() => handleRowClick(agent)}
+                                className="group relative bg-white border border-slate-200 rounded-2xl p-4 md:grid md:grid-cols-12 md:gap-4 md:items-center shadow-sm hover:shadow-md hover:border-indigo-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+                            >
+                                {/* Mobile Label */}
+                                <div className="md:hidden absolute top-4 right-4 text-xs font-bold text-slate-300">#{index + 1}</div>
+
+                                {/* Rank */}
+                                <div className="hidden md:flex col-span-1 items-center justify-center">
+                                    <span className={`text-lg font-bold ${index < 3 ? 'text-amber-500' : 'text-slate-400'}`}>
+                                        {index + 1}
+                                    </span>
+                                </div>
+
+                                {/* Agent Info */}
+                                <div className="col-span-3 flex items-center gap-4 mb-4 md:mb-0">
+                                    <div className="relative">
+                                        <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-500 overflow-hidden border-2 border-slate-100 group-hover:border-indigo-100 transition-colors shadow-sm">
+                                            {agent.imageUrl ? (
+                                                <img src={agent.imageUrl} alt="" className="w-full h-full object-cover" />
+                                            ) : (
+                                                agent.agentName.substring(0, 2)
+                                            )}
+                                        </div>
+                                        {index < 3 && (
+                                            <div className="absolute -top-1 -right-1 bg-amber-400 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-sm border border-white">
+                                                {index + 1}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="font-bold text-slate-900 text-base group-hover:text-indigo-600 transition-colors">{agent.agentName}</span>
+                                        <span className="text-xs font-mono text-slate-400">{agent.agentId}</span>
+                                    </div>
+                                </div>
+
+                                {/* Stats Grid (Mobile Adapted) */}
+                                <div className="grid grid-cols-2 gap-4 md:contents">
+                                    <div className="md:col-span-1 text-center md:flex md:justify-center md:items-center">
+                                        <div className="md:hidden text-xs text-slate-400 mb-1">CHATS</div>
+                                        <span className="font-bold text-slate-700 bg-slate-50 px-2 py-1 rounded-lg md:bg-transparent">{agent.numberOfChats}</span>
+                                    </div>
+                                    <div className="md:col-span-1 text-center md:flex md:justify-center md:items-center">
+                                        <div className="md:hidden text-xs text-slate-400 mb-1">SL%</div>
+                                        <span className={clsx("font-mono font-bold px-2 py-1 rounded-lg", getStatusColor(agent.slPercentage, THRESHOLDS.sl, 'higherIsBetter'))}>
+                                            {agent.slPercentage.toFixed(1)}%
+                                        </span>
+                                    </div>
+                                    <div className="md:col-span-1 text-center md:flex md:justify-center md:items-center">
+                                        <div className="md:hidden text-xs text-slate-400 mb-1">FRT</div>
+                                        <span className={clsx("font-mono font-bold px-2 py-1 rounded-lg", getStatusColor(agent.frtSeconds, THRESHOLDS.frt))}>
+                                            {agent.frtSeconds.toFixed(1)}
+                                        </span>
+                                    </div>
+                                    <div className="md:col-span-1 text-center md:flex md:justify-center md:items-center">
+                                        <div className="md:hidden text-xs text-slate-400 mb-1">ART</div>
+                                        <span className={clsx("font-mono font-bold px-2 py-1 rounded-lg", getStatusColor(agent.artSeconds, THRESHOLDS.art))}>
+                                            {agent.artSeconds.toFixed(1)}
+                                        </span>
+                                    </div>
+                                    <div className="md:col-span-1 text-center md:flex md:justify-center md:items-center">
+                                        <div className="md:hidden text-xs text-slate-400 mb-1">AHT</div>
+                                        <span className={clsx("font-mono font-bold px-2 py-1 rounded-lg", getStatusColor(agent.ahtMinutes, THRESHOLDS.aht))}>
+                                            {agent.ahtMinutes.toFixed(1)}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Status */}
+                                <div className="mt-4 md:mt-0 md:col-span-2 flex justify-center md:justify-center">
+                                    {issues.length === 0 ? (
+                                        <div className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100 shadow-sm">
+                                            <CheckCircle2 className="w-3.5 h-3.5" />
+                                            <span className="text-[10px] font-bold uppercase tracking-wider">On Track</span>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-1.5 text-amber-700 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-100 shadow-sm animate-pulse">
+                                            <AlertCircle className="w-3.5 h-3.5" />
+                                            <span className="text-[10px] font-bold uppercase tracking-wider">{issues.length} Review</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </motion.div>
+                        );
+                    })}
+                </AnimatePresence>
+            </div>
+            {sortedData.length === 0 && (
+                <div className="px-6 py-12 text-center text-slate-400 bg-white/50">
+                    No agents found matching the current filters.
+                </div>
+            )}
         </>
     );
 };
