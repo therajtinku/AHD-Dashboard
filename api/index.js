@@ -142,5 +142,32 @@ app.delete('/api/records', async (req, res) => {
     }
 });
 
+// GET: Proxy for fetching CSVs to avoid CORS
+app.get('/api/proxy', async (req, res) => {
+    try {
+        const { url } = req.query;
+        if (!url) {
+            return res.status(400).json({ error: 'URL parameter is required' });
+        }
+
+        // Basic security: Ensure it's a Google Sheets URL
+        // We can relax this if needed, but good for now.
+        if (!url.includes('docs.google.com/spreadsheets')) {
+            return res.status(400).json({ error: 'Only Google Sheets URLs are supported via this proxy' });
+        }
+
+        const response = await fetch(decodeURIComponent(url));
+        if (!response.ok) {
+            return res.status(response.status).send(response.statusText);
+        }
+
+        const text = await response.text();
+        res.send(text);
+    } catch (error) {
+        console.error('Proxy fetch failed:', error);
+        res.status(500).json({ error: 'Failed to fetch resource' });
+    }
+});
+
 // Export app for Vercel
 export default app;

@@ -71,9 +71,11 @@ export const parseCSVFromUrl = async (url) => {
         // Alternative: Use Google Sheets API with proper authentication
         const exportUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=${gid}`;
 
-        // Use a CORS proxy for client-side fetching
-        // Popular options: cors-anywhere, allorigins, corsproxy
-        fetchUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(exportUrl)}`;
+        // Use our own server-side proxy
+        // This is safer and more reliable than public CORS proxies
+        // We assume /api is relative to the current origin
+        const apiBase = import.meta.env.VITE_API_BASE || '/api';
+        fetchUrl = `${apiBase}/proxy?url=${encodeURIComponent(exportUrl)}`;
     }
 
     const response = await fetch(fetchUrl);
