@@ -57,6 +57,8 @@ export const DataControls = () => {
                 </div>
             )}
 
+
+
             <button
                 onClick={() => {
                     playClickSound();
@@ -76,7 +78,7 @@ export const DataControls = () => {
                 className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-sm hover:shadow-indigo-500/25 cursor-pointer active:scale-95"
             >
                 <Upload className="w-4 h-4" />
-                Import CSV
+                Connect Sheet
             </button>
 
             {data.length > 0 && (
@@ -97,6 +99,7 @@ export const DataControls = () => {
                     Reset Data
                 </button>
             )}
+
 
             {isUploadOpen && <CsvUploadModal onClose={() => setIsUploadOpen(false)} />}
             {isAddOpen && <AgentFormModal onClose={() => setIsAddOpen(false)} />}

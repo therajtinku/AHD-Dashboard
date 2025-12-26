@@ -7,7 +7,7 @@ import { parseCSV, parseCSVFromUrl } from '../utils/csvParser';
 export const CsvUploadModal = ({ onClose }) => {
     const { importData, setSyncUrl } = useDashboard();
     const { playClickSound } = useClickSound();
-    const [activeTab, setActiveTab] = useState('file');
+    const [activeTab, setActiveTab] = useState('url');
     const [url, setUrl] = useState('');
     const [keepSync, setKeepSync] = useState(false);
     const [error, setError] = useState(null);
