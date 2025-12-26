@@ -22,22 +22,26 @@ export const parseCSV = (file) => {
                             throw new Error("Missing required fields");
                         }
 
+                        const agentId = row.agentId?.trim();
+                        const week = row.week?.trim();
+                        const month = row.month?.trim();
+
                         return {
                             // Generate stable ID from agentId + period (week or month)
                             // This ensures the same agent's data for the same period always has the same ID
                             // Prevents duplicates during sync by allowing proper upsert matching
-                            id: `${row.agentId}-${row.week || row.month}`,
-                            agentId: row.agentId,
-                            agentName: row.agentName,
-                            role: row.role || 'Tier 1',
-                            week: row.week,
-                            month: row.month,
+                            id: `${agentId}-${week || month}`,
+                            agentId: agentId,
+                            agentName: row.agentName?.trim(),
+                            role: row.role?.trim() || 'Tier 1',
+                            week: week,
+                            month: month,
                             numberOfChats: parseInt(row.numberOfChats, 10) || 0,
                             slPercentage: parsePercentage(row.slPercentage || row.sl),
                             frtSeconds: parseFloat(row.frtSeconds || row.frt) || 0,
                             artSeconds: parseFloat(row.artSeconds) || 0,
                             ahtMinutes: parseFloat(row.ahtMinutes || row.ahtSeconds) || 0,
-                            imageUrl: row.imageUrl
+                            imageUrl: row.imageUrl?.trim()
                         };
                     });
                     resolve(parsedData);
@@ -102,22 +106,28 @@ export const parseCSVFromUrl = async (url) => {
                             // Basic validation: must have agentId or agentName to be valid
                             return row.agentId && row.agentName;
                         })
-                        .map((row) => ({
-                            // Generate stable ID from agentId + period (week or month)
-                            // This ensures the same agent's data for the same period always has the same ID
-                            id: `${row.agentId}-${row.week || row.month}`,
-                            agentId: row.agentId,
-                            agentName: row.agentName,
-                            role: row.role || 'Tier 1',
-                            week: row.week,
-                            month: row.month,
-                            numberOfChats: parseInt(row.numberOfChats, 10) || 0,
-                            slPercentage: parsePercentage(row.slPercentage || row.sl),
-                            frtSeconds: parseFloat(row.frtSeconds || row.frt) || 0,
-                            artSeconds: parseFloat(row.artSeconds) || 0,
-                            ahtMinutes: parseFloat(row.ahtMinutes || row.ahtSeconds) || 0,
-                            imageUrl: row.imageUrl
-                        }));
+                        .map((row) => {
+                            const agentId = row.agentId?.trim();
+                            const week = row.week?.trim();
+                            const month = row.month?.trim();
+
+                            return {
+                                // Generate stable ID from agentId + period (week or month)
+                                // Trimming ensures invisible spaces don't create new IDs
+                                id: `${agentId}-${week || month}`,
+                                agentId: agentId,
+                                agentName: row.agentName?.trim(),
+                                role: row.role?.trim() || 'Tier 1',
+                                week: week,
+                                month: month,
+                                numberOfChats: parseInt(row.numberOfChats, 10) || 0,
+                                slPercentage: parsePercentage(row.slPercentage || row.sl),
+                                frtSeconds: parseFloat(row.frtSeconds || row.frt) || 0,
+                                artSeconds: parseFloat(row.artSeconds) || 0,
+                                ahtMinutes: parseFloat(row.ahtMinutes || row.ahtSeconds) || 0,
+                                imageUrl: row.imageUrl?.trim()
+                            };
+                        });
 
                     if (parsedData.length === 0) {
                         throw new Error('No valid data found in CSV. Please check the format.');
