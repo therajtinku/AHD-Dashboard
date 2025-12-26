@@ -62,7 +62,7 @@ export const DataControls = () => {
                     playClickSound();
                     setIsAddOpen(true);
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all shadow-sm cursor-pointer"
+                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all shadow-sm cursor-pointer active:scale-95"
             >
                 <Plus className="w-4 h-4" />
                 Add Record
@@ -73,7 +73,7 @@ export const DataControls = () => {
                     playClickSound();
                     setIsUploadOpen(true);
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 transition-all shadow-sm hover:shadow-indigo-500/25 cursor-pointer"
+                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-all shadow-sm hover:shadow-indigo-500/25 cursor-pointer active:scale-95"
             >
                 <Upload className="w-4 h-4" />
                 Import CSV

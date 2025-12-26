@@ -8,9 +8,9 @@ export const Header = () => {
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            className="sticky top-4 z-50 px-4 sm:px-6 lg:px-8 mb-8"
+            className="sticky top-2 md:top-4 z-50 px-2 md:px-8 mb-6 md:mb-8"
         >
-            <div className="max-w-7xl mx-auto glass-panel rounded-xl px-6 py-4 flex items-center justify-between">
+            <div className="max-w-7xl mx-auto glass-panel rounded-2xl px-4 md:px-6 py-3 md:py-4 flex items-center justify-between shadow-lg shadow-indigo-500/5 backdrop-blur-xl bg-white/80 border border-white/40">
                 <div className="flex items-center gap-4">
                     <div className="p-2 bg-indigo-50 rounded-lg border border-indigo-100">
                         <BarChart3 className="w-5 h-5 text-indigo-600" />

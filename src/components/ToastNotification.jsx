@@ -19,7 +19,7 @@ export const ToastNotification = ({ message, type = 'info', isVisible, onClose }
                     initial={{ opacity: 0, y: 50, scale: 0.9 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                    className="fixed bottom-6 right-6 z-50 max-w-sm w-full"
+                    className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[90vw] max-w-sm"
                 >
                     <div className={`rounded-xl shadow-2xl p-4 border flex items-start gap-3 backdrop-blur-md
                         ${type === 'success' ? 'bg-emerald-50/90 border-emerald-100 text-emerald-900' :

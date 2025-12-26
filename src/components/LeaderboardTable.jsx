@@ -190,15 +190,21 @@ export const LeaderboardTable = () => {
                                     {/* Mobile Right Side: Status */}
                                     <div className="md:hidden">
                                         {issues.length === 0 ? (
-                                            <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                                            <div className="flex items-center gap-1.5 bg-emerald-50 px-2 py-1 rounded-full border border-emerald-100">
+                                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                                                <span className="text-[10px] font-bold text-emerald-700 uppercase">Good</span>
+                                            </div>
                                         ) : (
-                                            <AlertCircle className="w-5 h-5 text-amber-500" />
+                                            <div className="flex items-center gap-1.5 bg-amber-50 px-2 py-1 rounded-full border border-amber-100 animate-pulse">
+                                                <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
+                                                <span className="text-[10px] font-bold text-amber-700 uppercase">Review</span>
+                                            </div>
                                         )}
                                     </div>
                                 </div>
 
                                 {/* Stats Grid (Mobile Adapted) */}
-                                <div className="grid grid-cols-4 gap-2 md:contents bg-slate-50/50 md:bg-transparent rounded-lg p-2 md:p-0">
+                                <div className="grid grid-cols-3 gap-2 md:contents bg-slate-50/50 md:bg-transparent rounded-lg p-2 md:p-0">
                                     <div className="md:col-span-1 text-center md:flex md:justify-center md:items-center border-r border-slate-100 md:border-none last:border-0">
                                         <div className="md:hidden text-[10px] text-slate-400 mb-0.5 uppercase font-medium">Chats</div>
                                         <span className="font-bold text-slate-700 text-xs md:text-base md:bg-transparent">{agent.numberOfChats}</span>
@@ -209,23 +215,22 @@ export const LeaderboardTable = () => {
                                             {agent.slPercentage.toFixed(1)}%
                                         </span>
                                     </div>
-                                    <div className="md:col-span-1 text-center md:flex md:justify-center md:items-center border-r border-slate-100 md:border-none last:border-0">
+                                    <div className="md:col-span-1 text-center md:flex md:justify-center md:items-center border-slate-100 md:border-none last:border-0">
                                         <div className="md:hidden text-[10px] text-slate-400 mb-0.5 uppercase font-medium">FRT</div>
                                         <span className={clsx("font-mono font-bold text-xs md:text-base md:px-2 md:py-1 md:rounded-lg", getStatusColor(agent.frtSeconds, THRESHOLDS.frt))}>
                                             {agent.frtSeconds.toFixed(1)}
                                         </span>
                                     </div>
-                                    {/* Hidden on Mobile for space, or keeping ART */}
-                                    <div className="md:col-span-1 text-center md:flex md:justify-center md:items-center">
+                                    <div className="md:col-span-1 text-center md:flex md:justify-center md:items-center border-r border-slate-100 md:border-none last:border-0">
                                         <div className="md:hidden text-[10px] text-slate-400 mb-0.5 uppercase font-medium">ART</div>
                                         <span className={clsx("font-mono font-bold text-xs md:text-base md:px-2 md:py-1 md:rounded-lg", getStatusColor(agent.artSeconds, THRESHOLDS.art))}>
                                             {agent.artSeconds.toFixed(1)}
                                         </span>
                                     </div>
 
-                                    {/* Desktop only AHT */}
-                                    <div className="hidden md:flex md:col-span-1 text-center md:justify-center md:items-center">
-                                        <span className={clsx("font-mono font-bold px-2 py-1 rounded-lg", getStatusColor(agent.ahtMinutes, THRESHOLDS.aht))}>
+                                    <div className="md:col-span-1 text-center md:flex md:justify-center md:items-center">
+                                        <div className="md:hidden text-[10px] text-slate-400 mb-0.5 uppercase font-medium">AHT</div>
+                                        <span className={clsx("font-mono font-bold text-xs md:text-base md:px-2 md:py-1 md:rounded-lg", getStatusColor(agent.ahtMinutes, THRESHOLDS.aht))}>
                                             {agent.ahtMinutes.toFixed(1)}
                                         </span>
                                     </div>

@@ -41,30 +41,32 @@ export const FiltersBar = () => {
 
                 {/* Period Controls */}
                 <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-                    <div className="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-lg border border-slate-200 w-full sm:w-auto">
-                        <Calendar className="w-4 h-4 text-slate-500" />
-                        <select
-                            className="bg-transparent border-none text-sm font-medium focus:ring-0 text-slate-700 cursor-pointer"
-                            value={filters.periodType}
-                            onChange={handlePeriodTypeChange}
-                        >
-                            <option value="Monthly">Monthly</option>
-                            <option value="Weekly">Weekly</option>
-                        </select>
-                    </div>
+                    <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
+                        <div className="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">
+                            <Calendar className="w-4 h-4 text-slate-500 shrink-0" />
+                            <select
+                                className="bg-transparent border-none text-sm font-medium focus:ring-0 text-slate-700 cursor-pointer w-full"
+                                value={filters.periodType}
+                                onChange={handlePeriodTypeChange}
+                            >
+                                <option value="Monthly">Monthly</option>
+                                <option value="Weekly">Weekly</option>
+                            </select>
+                        </div>
 
-                    <div className="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-lg border border-slate-200 w-full sm:w-48 md:w-48">
-                        <select
-                            className="bg-transparent border-none text-sm font-medium focus:ring-0 text-slate-700 cursor-pointer w-full p-0"
-                            value={filters.selectedPeriod}
-                            onChange={(e) => setFilters({ ...filters, selectedPeriod: e.target.value })}
-                        >
-                            <option value="" disabled>Select Period</option>
-                            {filters.periodType === 'Weekly'
-                                ? weeks.map(w => <option key={w} value={w}>{w}</option>)
-                                : months.map(m => <option key={m} value={m}>{m}</option>)
-                            }
-                        </select>
+                        <div className="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200 w-full sm:w-48">
+                            <select
+                                className="bg-transparent border-none text-sm font-medium focus:ring-0 text-slate-700 cursor-pointer w-full p-0"
+                                value={filters.selectedPeriod}
+                                onChange={(e) => setFilters({ ...filters, selectedPeriod: e.target.value })}
+                            >
+                                <option value="" disabled>Select Period</option>
+                                {filters.periodType === 'Weekly'
+                                    ? weeks.map(w => <option key={w} value={w}>{w}</option>)
+                                    : months.map(m => <option key={m} value={m}>{m}</option>)
+                                }
+                            </select>
+                        </div>
                     </div>
                 </div>
 
