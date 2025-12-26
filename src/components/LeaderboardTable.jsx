@@ -148,74 +148,91 @@ export const LeaderboardTable = () => {
                                 exit={{ opacity: 0, scale: 0.95 }}
                                 transition={{ type: "spring", stiffness: 500, damping: 30, delay: index * 0.05 }}
                                 onClick={() => handleRowClick(agent)}
-                                className="group relative bg-white border border-slate-200 rounded-2xl p-4 md:grid md:grid-cols-12 md:gap-4 md:items-center shadow-sm hover:shadow-md hover:border-indigo-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+                                className="group relative bg-white border border-slate-200 rounded-xl md:rounded-2xl p-3 md:p-4 md:grid md:grid-cols-12 md:gap-4 md:items-center shadow-sm hover:shadow-md hover:border-indigo-200 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
                             >
-                                {/* Mobile Label */}
-                                <div className="md:hidden absolute top-4 right-4 text-xs font-bold text-slate-300">#{index + 1}</div>
-
-                                {/* Rank */}
-                                <div className="hidden md:flex col-span-1 items-center justify-center">
-                                    <span className={`text-lg font-bold ${index < 3 ? 'text-amber-500' : 'text-slate-400'}`}>
+                                {/* Mobile Mobile Header: Rank + Avatar + Name */}
+                                <div className="flex items-center gap-3 md:contents mb-3 md:mb-0">
+                                    {/* Rank (Mobile) */}
+                                    <div className={`md:hidden flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold text-white shadow-sm ring-1 ring-white ${index < 3 ? 'bg-amber-400' : 'bg-slate-300'}`}>
                                         {index + 1}
-                                    </span>
-                                </div>
+                                    </div>
 
-                                {/* Agent Info */}
-                                <div className="col-span-3 flex items-center gap-4 mb-4 md:mb-0">
-                                    <div className="relative">
-                                        <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-500 overflow-hidden border-2 border-slate-100 group-hover:border-indigo-100 transition-colors shadow-sm">
-                                            {agent.imageUrl ? (
-                                                <img src={agent.imageUrl} alt="" className="w-full h-full object-cover" />
-                                            ) : (
-                                                agent.agentName.substring(0, 2)
+                                    {/* Rank (Desktop) */}
+                                    <div className="hidden md:flex col-span-1 items-center justify-center">
+                                        <span className={`text-lg font-bold ${index < 3 ? 'text-amber-500' : 'text-slate-400'}`}>
+                                            {index + 1}
+                                        </span>
+                                    </div>
+
+                                    {/* Agent Info */}
+                                    <div className="flex-1 md:col-span-3 flex items-center gap-3 md:gap-4">
+                                        <div className="relative">
+                                            <div className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-500 overflow-hidden border-2 border-slate-100 group-hover:border-indigo-100 transition-colors shadow-sm">
+                                                {agent.imageUrl ? (
+                                                    <img src={agent.imageUrl} alt="" className="w-full h-full object-cover" />
+                                                ) : (
+                                                    agent.agentName.substring(0, 2)
+                                                )}
+                                            </div>
+                                            {/* Desktop Rank Badge on Avatar */}
+                                            {index < 3 && (
+                                                <div className="hidden md:flex absolute -top-1 -right-1 bg-amber-400 text-white text-[10px] font-bold w-5 h-5 rounded-full items-center justify-center shadow-sm border border-white">
+                                                    {index + 1}
+                                                </div>
                                             )}
                                         </div>
-                                        {index < 3 && (
-                                            <div className="absolute -top-1 -right-1 bg-amber-400 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-sm border border-white">
-                                                {index + 1}
-                                            </div>
-                                        )}
+                                        <div className="flex flex-col">
+                                            <span className="font-bold text-slate-900 text-sm md:text-base group-hover:text-indigo-600 transition-colors truncate max-w-[120px] md:max-w-none">{agent.agentName}</span>
+                                            <span className="text-[10px] md:text-xs font-mono text-slate-400">{agent.agentId}</span>
+                                        </div>
                                     </div>
-                                    <div className="flex flex-col">
-                                        <span className="font-bold text-slate-900 text-base group-hover:text-indigo-600 transition-colors">{agent.agentName}</span>
-                                        <span className="text-xs font-mono text-slate-400">{agent.agentId}</span>
+
+                                    {/* Mobile Right Side: Status */}
+                                    <div className="md:hidden">
+                                        {issues.length === 0 ? (
+                                            <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                                        ) : (
+                                            <AlertCircle className="w-5 h-5 text-amber-500" />
+                                        )}
                                     </div>
                                 </div>
 
                                 {/* Stats Grid (Mobile Adapted) */}
-                                <div className="grid grid-cols-2 gap-4 md:contents">
-                                    <div className="md:col-span-1 text-center md:flex md:justify-center md:items-center">
-                                        <div className="md:hidden text-xs text-slate-400 mb-1">CHATS</div>
-                                        <span className="font-bold text-slate-700 bg-slate-50 px-2 py-1 rounded-lg md:bg-transparent">{agent.numberOfChats}</span>
+                                <div className="grid grid-cols-4 gap-2 md:contents bg-slate-50/50 md:bg-transparent rounded-lg p-2 md:p-0">
+                                    <div className="md:col-span-1 text-center md:flex md:justify-center md:items-center border-r border-slate-100 md:border-none last:border-0">
+                                        <div className="md:hidden text-[10px] text-slate-400 mb-0.5 uppercase font-medium">Chats</div>
+                                        <span className="font-bold text-slate-700 text-xs md:text-base md:bg-transparent">{agent.numberOfChats}</span>
                                     </div>
-                                    <div className="md:col-span-1 text-center md:flex md:justify-center md:items-center">
-                                        <div className="md:hidden text-xs text-slate-400 mb-1">SL%</div>
-                                        <span className={clsx("font-mono font-bold px-2 py-1 rounded-lg", getStatusColor(agent.slPercentage, THRESHOLDS.sl, 'higherIsBetter'))}>
+                                    <div className="md:col-span-1 text-center md:flex md:justify-center md:items-center border-r border-slate-100 md:border-none last:border-0">
+                                        <div className="md:hidden text-[10px] text-slate-400 mb-0.5 uppercase font-medium">SL%</div>
+                                        <span className={clsx("font-mono font-bold text-xs md:text-base md:px-2 md:py-1 md:rounded-lg", getStatusColor(agent.slPercentage, THRESHOLDS.sl, 'higherIsBetter'))}>
                                             {agent.slPercentage.toFixed(1)}%
                                         </span>
                                     </div>
-                                    <div className="md:col-span-1 text-center md:flex md:justify-center md:items-center">
-                                        <div className="md:hidden text-xs text-slate-400 mb-1">FRT</div>
-                                        <span className={clsx("font-mono font-bold px-2 py-1 rounded-lg", getStatusColor(agent.frtSeconds, THRESHOLDS.frt))}>
+                                    <div className="md:col-span-1 text-center md:flex md:justify-center md:items-center border-r border-slate-100 md:border-none last:border-0">
+                                        <div className="md:hidden text-[10px] text-slate-400 mb-0.5 uppercase font-medium">FRT</div>
+                                        <span className={clsx("font-mono font-bold text-xs md:text-base md:px-2 md:py-1 md:rounded-lg", getStatusColor(agent.frtSeconds, THRESHOLDS.frt))}>
                                             {agent.frtSeconds.toFixed(1)}
                                         </span>
                                     </div>
+                                    {/* Hidden on Mobile for space, or keeping ART */}
                                     <div className="md:col-span-1 text-center md:flex md:justify-center md:items-center">
-                                        <div className="md:hidden text-xs text-slate-400 mb-1">ART</div>
-                                        <span className={clsx("font-mono font-bold px-2 py-1 rounded-lg", getStatusColor(agent.artSeconds, THRESHOLDS.art))}>
+                                        <div className="md:hidden text-[10px] text-slate-400 mb-0.5 uppercase font-medium">ART</div>
+                                        <span className={clsx("font-mono font-bold text-xs md:text-base md:px-2 md:py-1 md:rounded-lg", getStatusColor(agent.artSeconds, THRESHOLDS.art))}>
                                             {agent.artSeconds.toFixed(1)}
                                         </span>
                                     </div>
-                                    <div className="md:col-span-1 text-center md:flex md:justify-center md:items-center">
-                                        <div className="md:hidden text-xs text-slate-400 mb-1">AHT</div>
+
+                                    {/* Desktop only AHT */}
+                                    <div className="hidden md:flex md:col-span-1 text-center md:justify-center md:items-center">
                                         <span className={clsx("font-mono font-bold px-2 py-1 rounded-lg", getStatusColor(agent.ahtMinutes, THRESHOLDS.aht))}>
                                             {agent.ahtMinutes.toFixed(1)}
                                         </span>
                                     </div>
                                 </div>
 
-                                {/* Status */}
-                                <div className="mt-4 md:mt-0 md:col-span-2 flex justify-center md:justify-center">
+                                {/* Status - Desktop Only Visual */}
+                                <div className="hidden md:flex mt-4 md:mt-0 md:col-span-2 justify-center md:justify-center">
                                     {issues.length === 0 ? (
                                         <div className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100 shadow-sm">
                                             <CheckCircle2 className="w-3.5 h-3.5" />
