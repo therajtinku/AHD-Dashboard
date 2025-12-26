@@ -2,7 +2,7 @@
 
 A modern, high-performance dashboard for tracking agent metrics in real-time. Built for speed, clarity, and visual impact.
 
-## 🚀 Features
+## Features
 
 -   **Real-time Leaderboard**: Dynamic list view with floating glass-morphism cards.
 -   **Top Performers Podium**: Visually distinct podium for the top 3 agents with detailed metrics.
@@ -11,14 +11,14 @@ A modern, high-performance dashboard for tracking agent metrics in real-time. Bu
 -   **Responsive Design**: Fully optimized for desktop, tablet, and mobile devices.
 -   **Modern UI**: Clean "Light Professional" theme with standard whitespace and typography.
 
-## 🛠 Tech Stack
+## Tech Stack
 
 -   **Frontend**: React, Vite
 -   **Styling**: Tailwind CSS, PostCSS
 -   **Animations**: Framer Motion
 -   **Icons**: Lucide React
 
-## 📦 Installation
+## Installation
 
 1.  Clone the repository:
     ```bash
