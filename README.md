@@ -2,8 +2,6 @@
 
 A modern, high-performance dashboard for tracking agent metrics in real-time. Built for speed, clarity, and visual impact.
 
-![Dashboard Preview](public/screenshot.png)
-
 ## 🚀 Features
 
 -   **Real-time Leaderboard**: Dynamic list view with floating glass-morphism cards.
@@ -34,16 +32,3 @@ A modern, high-performance dashboard for tracking agent metrics in real-time. Bu
     ```bash
     npm run dev
     ```
-
-## 🚀 Deployment
-
-This project is optimized for deployment on [Vercel](https://vercel.com).
-
-1.  Push your code to GitHub.
-2.  Import the project into Vercel.
-3.  Vercel will automatically detect Vite and configure the build settings.
-4.  Deploy!
-
-## 📄 License
-
-MIT License - Copyright (c) 2024
